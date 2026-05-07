@@ -59,9 +59,6 @@ interface ImageFile {
 }
 
 // ---- Helpers
-function getImageUrl(chapterId: string, filename: string): string {
-  return `${process.env.NEXT_PUBLIC_API_URL}/uploads/image-chapters/${chapterId}/${filename}`;
-}
 
 function clsx(...classes: Array<string | boolean | undefined | null>) {
   return classes.filter(Boolean).join(" ");
@@ -187,22 +184,22 @@ export default function CreateImageChapterPage({
 
       e.preventDefault();
       e.stopPropagation();
-      
+
       // Smooth scroll with better sensitivity
       const scrollAmount = e.deltaY > 0 ? 60 : -60;
       const currentScroll = container.scrollTop;
       const maxScroll = container.scrollHeight - container.clientHeight;
-      
+
       // Ensure scroll doesn't go beyond bounds
       const newScroll = Math.max(0, Math.min(currentScroll + scrollAmount, maxScroll));
-      
+
       container.scrollTop = newScroll;
     };
 
     // Listen on document level with capture phase (passive: false allows preventDefault)
-    document.addEventListener("wheel", handleWheel, { 
+    document.addEventListener("wheel", handleWheel, {
       capture: true,
-      passive: false 
+      passive: false
     });
 
     return () => {
@@ -265,9 +262,9 @@ export default function CreateImageChapterPage({
       const existingImages =
         data.images?.[0]?.images?.map((imgName: string, index: number) => ({
           id: `existing-${index}`,
-          previewUrl: getImageUrl(chapterId, imgName),
+          previewUrl: imgName,
           isExisting: true,
-          originalUrl: getImageUrl(chapterId, imgName),
+          originalUrl: imgName,
           filename: imgName,
           order: index,
         })) || [];
@@ -1041,7 +1038,7 @@ export default function CreateImageChapterPage({
                         ) : (
                           <ScanText className="h-5 w-5" />
                         )}
-                       OCR & Translate Full Chapter
+                        OCR & Translate Full Chapter
                       </button>
                     )}
 

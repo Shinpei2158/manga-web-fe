@@ -91,7 +91,7 @@ export default function ProfileByIdPage({
             `${process.env.NEXT_PUBLIC_API_URL}/api/user/favourites`,
             {
               withCredentials: true,
-            },
+            }
           );
           setFavouriteStories(res.data.favourites || []);
           setFavouritesLoaded(true);
@@ -138,7 +138,7 @@ export default function ProfileByIdPage({
         try {
           const res = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/api/user/following`,
-            { withCredentials: true },
+            { withCredentials: true }
           );
           setFollowingAuthors(res.data.following || []);
           setFollowingLoaded(true);
@@ -155,7 +155,7 @@ export default function ProfileByIdPage({
       try {
         const stats = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/user/follow-stats`,
-          { withCredentials: true },
+          { withCredentials: true }
         );
         setFollowersCount(stats.data?.followersCount || 0);
         setFollowingCount(stats.data?.followingCount || 0);
@@ -224,19 +224,15 @@ export default function ProfileByIdPage({
         <div className="grid lg:grid-cols-3 gap-8">
           <Card className="lg:col-span-1">
             <CardContent className="p-6 flex flex-col items-center text-center">
-              <Avatar className="h-24 w-24 mb-4">
+              <Avatar className="w-24 h-24 mb-4">
                 <AvatarImage
                   src={
                     user.avatar
-                      ? user.avatar.startsWith("http")
-                        ? user.avatar
-                        : `${process.env.NEXT_PUBLIC_API_URL}/assets/avatars/${user.avatar}`
-                      : "/placeholder.svg?height=64&width=64&query=user-avatar"
                   }
                   alt={user.name}
                 />
-                <AvatarFallback>
-                  {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
+                <AvatarFallback className="text-4xl">
+                  {user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <h2 className="text-2xl font-bold mb-1">{user.name}</h2>
@@ -262,7 +258,9 @@ export default function ProfileByIdPage({
               <div className="flex gap-6 mb-6">
                 <div>
                   <p className="text-lg font-semibold">{followersCount}</p>
-                  <p className="text-sm text-muted-foreground">Followers</p>
+                  <p className="text-sm text-muted-foreground">
+                    Followers
+                  </p>
                 </div>
                 <div>
                   <p className="text-lg font-semibold">{followingCount}</p>
@@ -330,19 +328,17 @@ export default function ProfileByIdPage({
                         href={`/profile/user?id=${author._id}`}
                         className="flex items-center gap-4 p-4 border-b last:border-b-0 hover:bg-muted/50 transition-colors"
                       >
-                        <Avatar className="h-8 w-8">
+                        <Avatar className="w-12 h-12 flex-shrink-0">
                           <AvatarImage
                             src={
                               author.avatar
-                                ? author.avatar.startsWith("http")
-                                  ? author.avatar
-                                  : `${process.env.NEXT_PUBLIC_API_URL}/assets/avatars/${author.avatar}`
-                                : "/placeholder.svg?height=64&width=64&query=user-avatar"
+                                ? `${process.env.NEXT_PUBLIC_API_URL}/assets/avatars/${author.avatar}`
+                                : "/placeholder.svg"
                             }
                             alt={author.username}
                           />
-                          <AvatarFallback>
-                            {author?.username?.charAt(0)?.toUpperCase() ?? "U"}
+                          <AvatarFallback className="text-sm">
+                            {author.username?.charAt(0) || "A"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
@@ -404,18 +400,18 @@ export default function ProfileByIdPage({
                                   story.status === "completed"
                                     ? "default"
                                     : story.status === "ongoing"
-                                      ? "secondary"
-                                      : "destructive"
+                                    ? "secondary"
+                                    : "destructive"
                                 }
                                 className="text-xs"
                               >
                                 {story.status === "ongoing"
                                   ? "Ongoing"
                                   : story.status === "completed"
-                                    ? "Completed"
-                                    : story.status === "hiatus"
-                                      ? "Hiatus"
-                                      : story.status}
+                                  ? "Completed"
+                                  : story.status === "hiatus"
+                                  ? "Hiatus"
+                                  : story.status}
                               </Badge>
                             )}
                           </div>

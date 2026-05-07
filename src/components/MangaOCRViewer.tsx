@@ -360,7 +360,10 @@ export default function MangaOCRModal({
                     });
                     if (!response.ok) { errorCount++; continue; }
                     const data = await response.json();
-                    const translatedText = data.translation_text || data.text;
+                    console.log(`Translation for bubble ${item.id}:`, data);
+
+                    const translatedText = data?.[0]?.text;
+                    console.log(`Translated text for bubble ${item.id}:`, translatedText);
                     if (translatedText) {
                         setBubbles((prevBubbles) => {
                             const nextState = { ...prevBubbles };

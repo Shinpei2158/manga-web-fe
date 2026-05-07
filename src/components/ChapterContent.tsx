@@ -419,7 +419,6 @@ export default function ChapterContent() {
       setLoadingTranslation(false);
     }
   }, [id, chapterInfo?.type, translationData, toast]);
-
   // ─── Derived ──────────────────────────────────────────────────────────────
 
   const isTextChapter = !!originalContent;
@@ -680,7 +679,7 @@ export default function ChapterContent() {
             return (
               <MangaPageWithBubbles
                 key={index}
-                imgSrc={`${API_BASE}${imgUrl}`}
+                imgSrc={`${imgUrl}`}
                 bubbles={bubbles}
                 index={index}
                 totalPages={chapterInfo.images?.length ?? 0}
