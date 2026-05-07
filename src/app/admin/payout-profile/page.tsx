@@ -374,12 +374,12 @@ export default function PayoutProfileManagement() {
                             className="relative w-16 h-10 rounded-lg border border-slate-200 overflow-hidden cursor-pointer group/img"
                             onClick={() =>
                               setSelectedImg(
-                                `${process.env.NEXT_PUBLIC_API_URL}/payout-identity/${p.user_info._id}/${img}`,
+                                `${img}`,
                               )
                             }
                           >
                             <img
-                              src={`${process.env.NEXT_PUBLIC_API_URL}/payout-identity/${p.user_info._id}/${img}`}
+                              src={`${img}`}
                               className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-300"
                               alt="KYC"
                             />

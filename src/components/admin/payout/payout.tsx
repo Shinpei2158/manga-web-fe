@@ -68,12 +68,12 @@ interface PayoutSettlement {
   totalNet: number;
   withdrawCount: number;
   status:
-    | "pending"
-    | "exported"
-    | "processing"
-    | "paid"
-    | "failed"
-    | "cancelled";
+  | "pending"
+  | "exported"
+  | "processing"
+  | "paid"
+  | "failed"
+  | "cancelled";
   fileName: string;
   bankBatchRef?: string[];
   paidAt?: string;
@@ -101,28 +101,28 @@ export default function PayoutCard({ onWithdrawUpdated }: PayoutCardProps) {
 
   const getStatusBadge = (status: string, note?: string) => {
     const styles: Record<string, { color: string; icon: any; label: string }> =
-      {
-        pending: {
-          color: "bg-amber-50 text-amber-600 border-amber-200",
-          icon: Clock,
-          label: "Pending",
-        },
-        exported: {
-          color: "bg-blue-50 text-blue-600 border-blue-200",
-          icon: CheckCircle2,
-          label: "Exported",
-        },
-        paid: {
-          color: "bg-emerald-50 text-emerald-600 border-emerald-200",
-          icon: CheckCircle2,
-          label: "Paid",
-        },
-        cancelled: {
-          color: "bg-rose-50 text-rose-600 border-rose-200",
-          icon: XCircle,
-          label: "Cancelled",
-        },
-      };
+    {
+      pending: {
+        color: "bg-amber-50 text-amber-600 border-amber-200",
+        icon: Clock,
+        label: "Pending",
+      },
+      exported: {
+        color: "bg-blue-50 text-blue-600 border-blue-200",
+        icon: CheckCircle2,
+        label: "Exported",
+      },
+      paid: {
+        color: "bg-emerald-50 text-emerald-600 border-emerald-200",
+        icon: CheckCircle2,
+        label: "Paid",
+      },
+      cancelled: {
+        color: "bg-rose-50 text-rose-600 border-rose-200",
+        icon: XCircle,
+        label: "Cancelled",
+      },
+    };
 
     const s = styles[status] || {
       color: "bg-gray-50 text-gray-600 border-gray-200",
@@ -171,127 +171,54 @@ export default function PayoutCard({ onWithdrawUpdated }: PayoutCardProps) {
     }
   };
 
-  const exportPayoutExcel = async () => {
+const exportPayoutExcel = async () => {
+  if (!fromDate || !toDate) {
+    toast({
+      title: "Please pick a range date",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
     setExporting(true);
-    if (!fromDate || !toDate) {
-      toast({
-        title: "Please pick a range date",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/payout-settlement/export`,
-        {
-          params: {
-            from: fromDate,
-            to: toDate,
-          },
-          withCredentials: true,
-          responseType: "blob",
-        },
-      );
+    const params = new URLSearchParams({
+      from: format(fromDate, "yyyy-MM-dd"),
+      to: format(toDate, "yyyy-MM-dd"),
+    });
 
-      if (res.status === 204) {
-        toast({
-          title: "Cannot export file",
-          description: "No matching withdraw were found during this period.",
-          variant: "destructive",
-        });
-        return;
-      }
+    window.open(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/payout-settlement/export?${params.toString()}`,
+      "_blank",
+    );
 
-      const blob = new Blob([res.data], {
-        type: res.headers["content-type"],
-      });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
+    toast({
+      title: "Export successfully!",
+      description: "Export payout settlement successfully",
+      variant: "success",
+    });
 
-      const disposition = res.headers["content-disposition"];
-
-      let fileName = "";
-      if (disposition) {
-        const match =
-          disposition.match(/filename\*=UTF-8''([^;]+)/) ||
-          disposition.match(/filename="?([^"]+)"?/);
-
-        if (match?.[1]) {
-          fileName = decodeURIComponent(match[1]);
-        }
-      }
-      link.download = fileName;
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      toast({
-        title: "Export successfully!",
-        description: "Export payout settlement successfully",
-        variant: "success",
-      });
-
+    setTimeout(() => {
       fetchPayoutSettlement();
-    } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "An error while exporting",
-        description: "Cannot export file for some error",
-      });
-    } finally {
-      setExporting(false);
-    }
+    }, 1000);
+  } catch {
+    toast({
+      variant: "destructive",
+      title: "An error while exporting",
+      description: "Cannot export file for some error",
+    });
+  } finally {
+    setExporting(false);
+  }
+};
+
+  const handleDownloadAgain = (payout: PayoutSettlement) => {
+    window.open(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/payout-settlement/download/${payout._id}`,
+      "_blank",
+    );
   };
-
-  const handleDownloadAgain = async (payout: PayoutSettlement) => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/payout-settlement/download/${payout._id}`,
-        {
-          withCredentials: true,
-          responseType: "blob",
-        },
-      );
-
-      const blob = new Blob([response.data], {
-        type: response.headers["content-type"],
-      });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-
-      const disposition = response.headers["content-disposition"];
-
-      let fileName = "";
-      if (disposition) {
-        const match =
-          disposition.match(/filename\*=UTF-8''([^;]+)/) ||
-          disposition.match(/filename="?([^"]+)"?/);
-
-        if (match?.[1]) {
-          fileName = decodeURIComponent(match[1]);
-        }
-      }
-      link.download = fileName;
-
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Error while downloading",
-        description:
-          err.response?.data?.message || "File not found or connection error.",
-      });
-    }
-  };
-
   useEffect(() => {
     fetchPayoutSettlement();
   }, []);

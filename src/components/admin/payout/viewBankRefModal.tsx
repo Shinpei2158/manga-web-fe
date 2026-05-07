@@ -35,12 +35,12 @@ interface PayoutSettlement {
   totalNet: number;
   withdrawCount: number;
   status:
-    | "pending"
-    | "exported"
-    | "processing"
-    | "paid"
-    | "failed"
-    | "cancelled";
+  | "pending"
+  | "exported"
+  | "processing"
+  | "paid"
+  | "failed"
+  | "cancelled";
   fileName: string;
   bankBatchRef?: string[];
   paidAt?: string;
@@ -99,7 +99,7 @@ export default function ViewBankRefModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {payout.bankBatchRef?.map((fileName, idx) => {
-              const fileUrl = `${apiUrl}/bankBatchRef/${payout._id}/${fileName}`;
+              const fileUrl = `${fileName}`;
               const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(fileName);
 
               return (
@@ -142,17 +142,10 @@ export default function ViewBankRefModal({
                   <div className="p-3 border-t flex items-center justify-between">
                     <p
                       className="text-xs font-medium truncate flex-1 pr-2 text-slate-600"
-                      title={fileName}
+                      title={"Payout File"}
                     >
-                      {fileName}
+                      Payout File
                     </p>
-                    <a
-                      href={fileUrl}
-                      download
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <Download className="w-4 h-4" />
-                    </a>
                   </div>
                 </div>
               );

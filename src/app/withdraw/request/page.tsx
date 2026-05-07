@@ -98,6 +98,7 @@ export default function PayoutProfilePage() {
         setProfile(defaultProfile);
         return;
       }
+      console.log(data.profile.identityImages?.[0], "profile image");
 
       if (data.profile) {
         setProfile({
@@ -133,7 +134,7 @@ export default function PayoutProfilePage() {
   };
   const getIdentityImageUrl = (index: number): string | undefined => {
     if (!profile?.identityImages?.[index]) return undefined;
-    return `${apiBase}/payout-identity/${profile.userId?._id}/${profile.identityImages[index]}`;
+    return `${profile.identityImages[index]}`;
   };
 
   useEffect(() => {
@@ -490,8 +491,8 @@ export default function PayoutProfilePage() {
                       >
                         {profile.bankName
                           ? banks.find(
-                              (bank) => bank.value === profile.bankName,
-                            )?.label
+                            (bank) => bank.value === profile.bankName,
+                          )?.label
                           : "Select bank..."}
 
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

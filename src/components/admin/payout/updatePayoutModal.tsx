@@ -62,7 +62,7 @@ export default function UpdatePayoutModal({
       const formData = new FormData();
       formData.append("note", note);
       formData.append("remainingFiles", JSON.stringify(existingFiles));
-      newFiles.forEach((file) => formData.append("bankBatchRef", file));
+      newFiles.forEach((file) => formData.append("proofFiles", file));
 
       await axios.patch(
         `${apiUrl}/api/payout-settlement/update-paid/${payout._id}`,
@@ -131,7 +131,7 @@ export default function UpdatePayoutModal({
             </Label>
             <div className="grid grid-cols-2 gap-3">
               {existingFiles.map((file) => {
-                const fileUrl = `${apiUrl}/bankBatchRef/${payout._id}/${file}`;
+                const fileUrl = `${file}`;
                 const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(file);
                 return (
                   <div
