@@ -3,7 +3,11 @@
 import { SidebarBrand } from "./sidebar-brand";
 import { SidebarLogout } from "./sidebar-logout";
 import { SidebarMenu } from "./sidebar-menu";
-import type { GroupItem, MenuItem, SubmenuItem } from "../types";
+import type {
+  GroupItem,
+  MenuItem,
+  SubmenuItem,
+} from "@/lib/admin-layout/types";
 
 type AdminSidebarProps = {
   currentRoleFound: boolean;

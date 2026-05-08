@@ -2,8 +2,12 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import type { GroupItem, MenuItem, SubmenuItem } from "../types";
-import { isPathActive } from "../utils";
+import type {
+  GroupItem,
+  MenuItem,
+  SubmenuItem,
+} from "@/lib/admin-layout/types";
+import { isPathActive } from "@/lib/admin-layout/utils";
 
 type SidebarMenuProps = {
   currentRoleFound: boolean;

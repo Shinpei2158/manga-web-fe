@@ -20,7 +20,7 @@ import {
   Tags,
   Users,
 } from "lucide-react";
-import type { MenuItem, Role } from "./types";
+import type { MenuItem, Role } from "@/lib/admin-layout/types";
 
 export const menuItems: MenuItem[] = [
   {

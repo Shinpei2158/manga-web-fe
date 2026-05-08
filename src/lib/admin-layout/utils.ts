@@ -1,5 +1,5 @@
-import { ROLE_MENU_ACCESS } from "./menu";
-import type { MenuItem, Role, SubmenuItem } from "./types";
+import { ROLE_MENU_ACCESS } from "@/lib/admin-layout/menu";
+import type { MenuItem, Role, SubmenuItem } from "@/lib/admin-layout/types";
 
 export function isPathActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);

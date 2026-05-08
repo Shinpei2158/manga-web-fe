@@ -12,21 +12,21 @@ import {
 } from "@/lib/admin-workspace";
 import { useAuth } from "@/lib/auth-context";
 import { removeCookie } from "@/lib/cookie-func";
-import { AdminContentShell } from "./components/admin-content-shell";
-import { AdminSidebar } from "./components/admin-sidebar";
+import { AdminContentShell } from "@/components/admin/admin-layout/admin-content-shell";
+import { AdminSidebar } from "@/components/admin/admin-layout/admin-sidebar";
 import {
   INITIAL_EXPANDED_GROUPS,
   ROLE_TOOL_LABEL,
   menuItems,
-} from "./menu";
-import type { GroupItem, SubmenuItem } from "./types";
+} from "@/lib/admin-layout/menu";
+import type { GroupItem, SubmenuItem } from "@/lib/admin-layout/types";
 import {
   canAccessMenuPath,
   getFirstWorkspaceHref,
   getVisibleMenuItems,
   isSubmenuItemActive,
   normalizeRole,
-} from "./utils";
+} from "@/lib/admin-layout/utils";
 
 const REDIRECT_DELAY_MS = 100;
 
