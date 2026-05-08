@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +20,8 @@ import {
 import {
   type MangaLicenseStatus,
   type QueueItem,
-} from "../license-management.types";
-import { formatDateTime } from "../license-management.utils";
+} from "@/lib/admin-license-management/license-management.types";
+import { formatDateTime } from "@/lib/admin-license-management/license-management.utils";
 
 type ModerationQueueCardProps = {
   items: QueueItem[];
@@ -134,12 +135,15 @@ export function ModerationQueueCard({
                   ].join(" ")}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="h-16 w-12 shrink-0 overflow-hidden rounded-md border bg-gray-100">
+                    <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border bg-gray-100">
                       {coverUrl ? (
-                        <img
+                        <Image
                           src={coverUrl}
                           alt={item.title}
-                          className="h-full w-full object-cover"
+                          fill
+                          unoptimized
+                          sizes="48px"
+                          className="object-cover"
                         />
                       ) : null}
                     </div>

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { OFFICIAL_LICENSE_REFERENCE_LINKS } from "../license-knowledge.data";
+import { OFFICIAL_LICENSE_REFERENCE_LINKS } from "@/lib/admin-license-management/license-knowledge.data";
 
 export function TheoryLookupCard() {
   return (

@@ -12,8 +12,8 @@ import {
 import type {
   DerivedLicenseContext,
   LicenseCaseGuide,
-} from "../license-knowledge.types";
-import { getReviewLevelMeta } from "../license-knowledge.utils";
+} from "@/lib/admin-license-management/license-knowledge.types";
+import { getReviewLevelMeta } from "@/lib/admin-license-management/license-knowledge.utils";
 
 type CaseGuideCardProps = {
   context: DerivedLicenseContext | null;

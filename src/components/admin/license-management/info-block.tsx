@@ -1,6 +1,6 @@
 import { ExternalLink } from "lucide-react";
 
-import { formatDateTime } from "../license-management.utils";
+import { formatDateTime } from "@/lib/admin-license-management/license-management.utils";
 
 export function InfoBlock({
   label,
