@@ -3,7 +3,7 @@
 import { use } from "react"
 import AdminLayout from "../../adminLayout/page"
 import { PolicyEditView } from "@/components/admin/policies/policy-edit-view"
-import { usePolicyEditController } from "@/hooks/admin-policies/use-policy-edit-controller"
+import { usePolicyEditController } from "@/hooks/admin/policies/use-policy-edit-controller"
 
 export default function AdminPolicyEditPage({
   params,

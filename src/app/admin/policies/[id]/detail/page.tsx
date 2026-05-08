@@ -3,7 +3,7 @@
 import { use } from "react"
 import AdminLayout from "../../../adminLayout/page"
 import { PolicyDetailView } from "@/components/admin/policies/policy-detail-view"
-import { usePolicyDetailController } from "@/hooks/admin-policies/use-policy-detail-controller"
+import { usePolicyDetailController } from "@/hooks/admin/policies/use-policy-detail-controller"
 
 export default function AdminPolicyDetailPage({
   params,

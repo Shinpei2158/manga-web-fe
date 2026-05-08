@@ -29,7 +29,7 @@ import {
   type CommunityReportAgainstGroup,
   type ReportAgainstGroup,
 } from "@/lib/report-workspace";
-import type { ReportWorkspaceController } from "@/hooks/admin-report/use-report-workspace-controller";
+import type { ReportWorkspaceController } from "@/hooks/admin/report/use-report-workspace-controller";
 import type { GroupStatusFilter } from "@/lib/admin-report/types";
 import {
   CommunityReportGroupRow,

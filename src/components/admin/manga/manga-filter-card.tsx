@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { AdminMangaController } from "@/hooks/admin-manga/use-admin-manga-controller";
+import type { AdminMangaController } from "@/hooks/admin/manga/use-admin-manga-controller";
 
 export function MangaFilterCard({
   controller: c,

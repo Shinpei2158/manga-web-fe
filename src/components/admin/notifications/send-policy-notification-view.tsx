@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { SendPolicyNotificationController } from "@/hooks/admin-notifications/use-send-policy-notification-controller";
+import type { SendPolicyNotificationController } from "@/hooks/admin/notifications/use-send-policy-notification-controller";
 import { getPolicyStatusLabel } from "@/lib/admin-notifications/utils";
 import { SendNotificationComposeCard } from "./send-notification-compose-card";
 import { SendNotificationQuickActions } from "./send-notification-quick-actions";

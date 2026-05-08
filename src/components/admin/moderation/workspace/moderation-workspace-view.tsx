@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import type { ModerationWorkspaceController } from "@/hooks/admin-moderation/use-moderation-workspace-controller";
+import type { ModerationWorkspaceController } from "@/hooks/admin/moderation/use-moderation-workspace-controller";
 import { ChapterSummary } from "./chapter-summary";
 import { ContentViewer } from "./content-viewer";
 import { FindingsPanel } from "./findings-panel";

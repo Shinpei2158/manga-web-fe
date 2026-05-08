@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { SendGeneralNotificationController } from "@/hooks/admin-notifications/use-send-general-notification-controller";
+import type { SendGeneralNotificationController } from "@/hooks/admin/notifications/use-send-general-notification-controller";
 import { SendNotificationComposeCard } from "./send-notification-compose-card";
 import { SendNotificationQuickActions } from "./send-notification-quick-actions";
 

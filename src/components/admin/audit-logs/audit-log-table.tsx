@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { AuditLogsController } from "@/hooks/admin-audit-logs/use-audit-logs-controller";
+import type { AuditLogsController } from "@/hooks/admin/audit-logs/use-audit-logs-controller";
 import { auditSurfaceClass } from "@/lib/admin-audit-logs/constants";
 import { AuditPagination } from "./audit-log-table-pagination";
 import { AuditTableRow } from "./audit-log-table-row";

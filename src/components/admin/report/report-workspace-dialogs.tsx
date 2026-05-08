@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { ReportWorkspaceController } from "@/hooks/admin-report/use-report-workspace-controller";
+import type { ReportWorkspaceController } from "@/hooks/admin/report/use-report-workspace-controller";
 
 export function ReportWorkspaceDialogs({
   controller: c,

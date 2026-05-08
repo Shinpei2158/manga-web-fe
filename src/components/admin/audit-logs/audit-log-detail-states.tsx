@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowLeft, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { AuditLogDetailsController } from "@/hooks/admin-audit-logs/use-audit-log-details";
+import type { AuditLogDetailsController } from "@/hooks/admin/audit-logs/use-audit-log-details";
 import { auditDetailSurfaceClass } from "@/lib/admin-audit-logs/constants";
 
 export function AuditLogDetailSkeleton() {

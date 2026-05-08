@@ -1,6 +1,6 @@
 "use client"
 
-import type { PolicyCreateController } from "@/hooks/admin-policies/use-policy-create-controller"
+import type { PolicyCreateController } from "@/hooks/admin/policies/use-policy-create-controller"
 import PolicyForm from "@/components/policies/policy-form"
 
 export function PolicyCreateView({

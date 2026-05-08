@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { LicenseManagementController } from "@/hooks/admin-license-management/use-license-management-controller";
+import type { LicenseManagementController } from "@/hooks/admin/license-management/use-license-management-controller";
 import { CaseGuideCard } from "./case-guide-card";
 import { LicenseDetailCard } from "./license-detail-card";
 import { LicenseExamplesCard } from "./license-examples-card";

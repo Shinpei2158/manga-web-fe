@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import PolicyForm from "@/components/policies/policy-form"
-import type { PolicyEditController } from "@/hooks/admin-policies/use-policy-edit-controller"
+import type { PolicyEditController } from "@/hooks/admin/policies/use-policy-edit-controller"
 
 export function PolicyEditView({
   controller: c,

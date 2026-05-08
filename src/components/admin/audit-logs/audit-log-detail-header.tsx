@@ -4,7 +4,7 @@ import { ArrowLeft, Copy, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { AuditLogDetailsController } from "@/hooks/admin-audit-logs/use-audit-log-details";
+import type { AuditLogDetailsController } from "@/hooks/admin/audit-logs/use-audit-log-details";
 import { auditDetailSurfaceClass } from "@/lib/admin-audit-logs/constants";
 import {
   getApprovalTone,

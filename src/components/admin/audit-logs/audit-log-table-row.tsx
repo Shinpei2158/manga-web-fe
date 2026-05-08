@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { AuditLogsController } from "@/hooks/admin-audit-logs/use-audit-logs-controller";
+import type { AuditLogsController } from "@/hooks/admin/audit-logs/use-audit-logs-controller";
 import type { AuditLogUI } from "@/lib/admin-audit-logs/types";
 import {
   getActionTone,

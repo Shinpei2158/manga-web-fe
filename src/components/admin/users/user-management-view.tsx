@@ -5,7 +5,7 @@ import { UserManagementFilters } from "@/components/admin/users/user-management-
 import { UserManagementPagination } from "@/components/admin/users/user-management-pagination";
 import { UserManagementStats } from "@/components/admin/users/user-management-stats";
 import { UserManagementTable } from "@/components/admin/users/user-management-table";
-import type { UserManagementController } from "@/hooks/admin-users/use-user-management-controller";
+import type { UserManagementController } from "@/hooks/admin/users/use-user-management-controller";
 import { BulkSelectionCard } from "./bulk-selection-card";
 import { BulkConfirmDialog, UserConfirmDialog } from "./user-confirm-dialogs";
 import { UserManagementHeader } from "./user-management-header";

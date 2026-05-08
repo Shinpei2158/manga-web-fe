@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import type { ModerationQueueController } from "@/hooks/admin-moderation/use-moderation-queue-controller";
+import type { ModerationQueueController } from "@/hooks/admin/moderation/use-moderation-queue-controller";
 import { ModerationQueuePagination } from "./queue-pagination";
 import { QueueFilters } from "./queue-filters";
 import { QueueTable } from "./queue-table";

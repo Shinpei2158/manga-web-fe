@@ -3,7 +3,7 @@
 import { Bell, Bookmark, BookmarkPlus, Check, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { AdminMyNotificationsController } from "@/hooks/admin-my-notifications/use-admin-my-notifications-controller";
+import type { AdminMyNotificationsController } from "@/hooks/admin/my-notifications/use-admin-my-notifications-controller";
 import type { StaffNotificationItem } from "@/lib/admin-my-notifications/types";
 import { formatStaffNotificationDate } from "@/lib/admin-my-notifications/utils";
 

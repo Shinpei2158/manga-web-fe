@@ -3,7 +3,7 @@
 import { CommentFilters } from "@/components/comment/comment-filters";
 import { CommentModal } from "@/components/comment/comment-modal";
 import { CommentTable } from "@/components/comment/comment-table";
-import type { AdminCommentsController } from "@/hooks/admin-comments/use-admin-comments-controller";
+import type { AdminCommentsController } from "@/hooks/admin/comments/use-admin-comments-controller";
 import { AdminCommentsHeader } from "./admin-comments-header";
 import { AdminCommentsQuickFilters } from "./admin-comments-quick-filters";
 import { AdminCommentsStats } from "./admin-comments-stats";

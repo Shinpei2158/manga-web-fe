@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import type { AuditLogsController } from "@/hooks/admin-audit-logs/use-audit-logs-controller";
+import type { AuditLogsController } from "@/hooks/admin/audit-logs/use-audit-logs-controller";
 import {
   auditActionOptions,
   auditInsetSurfaceClass,

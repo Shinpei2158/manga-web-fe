@@ -2,7 +2,7 @@ import { User2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { AdminMangaController } from "@/hooks/admin-manga/use-admin-manga-controller";
+import type { AdminMangaController } from "@/hooks/admin/manga/use-admin-manga-controller";
 import type { MangaDetail } from "@/lib/admin-manga/types";
 import {
   getEnforcementStatusColor,

@@ -1,6 +1,6 @@
 "use client";
 
-import type { AdminMyNotificationsController } from "@/hooks/admin-my-notifications/use-admin-my-notifications-controller";
+import type { AdminMyNotificationsController } from "@/hooks/admin/my-notifications/use-admin-my-notifications-controller";
 import { AdminMyNotificationsHeader } from "./admin-my-notifications-header";
 import { AdminMyNotificationsList } from "./admin-my-notifications-list";
 import { AdminMyNotificationsStats } from "./admin-my-notifications-stats";

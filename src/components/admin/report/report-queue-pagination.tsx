@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { ReportWorkspaceController } from "@/hooks/admin-report/use-report-workspace-controller";
+import type { ReportWorkspaceController } from "@/hooks/admin/report/use-report-workspace-controller";
 
 export function ReportQueuePagination({
   controller: c,

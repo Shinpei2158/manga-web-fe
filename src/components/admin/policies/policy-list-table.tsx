@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { PolicyListController } from "@/hooks/admin-policies/use-policy-list-controller"
+import type { PolicyListController } from "@/hooks/admin/policies/use-policy-list-controller"
 import type { SortField } from "@/lib/admin-policies/types"
 import {
   formatPolicyDate,

@@ -1,6 +1,6 @@
 "use client";
 
-import type { AuditLogsController } from "@/hooks/admin-audit-logs/use-audit-logs-controller";
+import type { AuditLogsController } from "@/hooks/admin/audit-logs/use-audit-logs-controller";
 import { AuditLogFiltersPanel } from "./audit-log-filters-panel";
 import { AuditLogTable } from "./audit-log-table";
 import { AuditLogsHeader } from "./audit-logs-header";

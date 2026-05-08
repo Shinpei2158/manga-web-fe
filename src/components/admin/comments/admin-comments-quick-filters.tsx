@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Clock3, Eye, EyeOff } from "lucide-react";
-import type { AdminCommentsController } from "@/hooks/admin-comments/use-admin-comments-controller";
+import type { AdminCommentsController } from "@/hooks/admin/comments/use-admin-comments-controller";
 
 export function AdminCommentsQuickFilters({
   controller: c,

@@ -5,7 +5,7 @@ import { ArrowLeft, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import PolicyReader from "@/components/policies/policy-reader"
-import type { PolicyDetailController } from "@/hooks/admin-policies/use-policy-detail-controller"
+import type { PolicyDetailController } from "@/hooks/admin/policies/use-policy-detail-controller"
 import { PolicyDetailLoadingState } from "./policy-table-states"
 
 function NotFoundState() {

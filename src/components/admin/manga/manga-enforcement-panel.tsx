@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { AdminMangaController } from "@/hooks/admin-manga/use-admin-manga-controller";
+import type { AdminMangaController } from "@/hooks/admin/manga/use-admin-manga-controller";
 import type { MangaDetail } from "@/lib/admin-manga/types";
 import {
   formatMangaDate,

@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type { AdminMyNotificationsController } from "@/hooks/admin-my-notifications/use-admin-my-notifications-controller";
+import type { AdminMyNotificationsController } from "@/hooks/admin/my-notifications/use-admin-my-notifications-controller";
 import type { StaffInboxFilter } from "@/lib/admin-my-notifications/types";
 
 export function AdminMyNotificationsToolbar({

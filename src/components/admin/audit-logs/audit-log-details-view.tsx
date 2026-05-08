@@ -1,6 +1,6 @@
 "use client";
 
-import type { AuditLogDetailsController } from "@/hooks/admin-audit-logs/use-audit-log-details";
+import type { AuditLogDetailsController } from "@/hooks/admin/audit-logs/use-audit-log-details";
 import { AuditLogChangeDetails } from "./audit-log-change-details";
 import { AuditLogCommentPreview } from "./audit-log-comment-preview";
 import { AuditLogDetailError, AuditLogDetailSkeleton } from "./audit-log-detail-states";

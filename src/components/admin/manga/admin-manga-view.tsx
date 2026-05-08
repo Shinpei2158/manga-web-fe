@@ -1,6 +1,6 @@
 "use client";
 
-import type { AdminMangaController } from "@/hooks/admin-manga/use-admin-manga-controller";
+import type { AdminMangaController } from "@/hooks/admin/manga/use-admin-manga-controller";
 import { MangaActionDialog } from "./manga-action-dialog";
 import { MangaDetailSheet } from "./manga-detail-sheet";
 import { MangaFilterCard } from "./manga-filter-card";

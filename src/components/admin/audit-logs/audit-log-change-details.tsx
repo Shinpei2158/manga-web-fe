@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { AuditLogDetailsController } from "@/hooks/admin-audit-logs/use-audit-log-details";
+import type { AuditLogDetailsController } from "@/hooks/admin/audit-logs/use-audit-log-details";
 import {
   auditDetailInsetSurfaceClass,
   auditDetailSurfaceClass,

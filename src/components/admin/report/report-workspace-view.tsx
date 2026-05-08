@@ -1,7 +1,7 @@
 "use client";
 
 import { getPageNumbers } from "@/lib/report-workspace";
-import type { ReportWorkspaceController } from "@/hooks/admin-report/use-report-workspace-controller";
+import type { ReportWorkspaceController } from "@/hooks/admin/report/use-report-workspace-controller";
 import { ReportQueueCard } from "./report-queue-card";
 import { ReportStatsCards } from "./report-stats-cards";
 import { ReportWorkspaceDialogs } from "./report-workspace-dialogs";

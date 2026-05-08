@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { AdminMangaController } from "@/hooks/admin-manga/use-admin-manga-controller";
+import type { AdminMangaController } from "@/hooks/admin/manga/use-admin-manga-controller";
 import type { SortField } from "@/lib/admin-manga/types";
 import {
   formatMangaDate,

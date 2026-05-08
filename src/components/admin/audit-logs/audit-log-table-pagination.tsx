@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { AuditLogsController } from "@/hooks/admin-audit-logs/use-audit-logs-controller";
+import type { AuditLogsController } from "@/hooks/admin/audit-logs/use-audit-logs-controller";
 
 export function AuditPagination({
   controller: c,

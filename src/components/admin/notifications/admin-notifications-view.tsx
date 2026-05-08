@@ -3,7 +3,7 @@
 import { NotificationFilters } from "@/components/notifications/notification-filters";
 import { NotificationModal } from "@/components/notifications/notification-modal";
 import { NotificationTable } from "@/components/notifications/notification-table";
-import type { AdminNotificationsController } from "@/hooks/admin-notifications/use-admin-notifications-controller";
+import type { AdminNotificationsController } from "@/hooks/admin/notifications/use-admin-notifications-controller";
 import { ADMIN_NOTIFICATIONS_PAGE_SIZE } from "@/lib/admin-notifications/constants";
 import { AdminNotificationsHeader } from "./admin-notifications-header";
 import { AdminNotificationsLoading } from "./admin-notifications-loading";

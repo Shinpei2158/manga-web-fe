@@ -8,7 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import type { AdminMangaController } from "@/hooks/admin-manga/use-admin-manga-controller";
+import type { AdminMangaController } from "@/hooks/admin/manga/use-admin-manga-controller";
 import { MangaDetailHeader } from "./manga-detail-header";
 import { MangaDetailEmptyState, MangaDetailLoading } from "./manga-detail-states";
 import { MangaEnforcementPanel } from "./manga-enforcement-panel";

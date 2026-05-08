@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { PolicyListController } from "@/hooks/admin-policies/use-policy-list-controller"
+import type { PolicyListController } from "@/hooks/admin/policies/use-policy-list-controller"
 import type {
   StatusFilter,
   VisibilityFilter,

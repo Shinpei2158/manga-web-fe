@@ -2,7 +2,7 @@
 
 import { BellDot, CheckCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { AdminMyNotificationsController } from "@/hooks/admin-my-notifications/use-admin-my-notifications-controller";
+import type { AdminMyNotificationsController } from "@/hooks/admin/my-notifications/use-admin-my-notifications-controller";
 
 export function AdminMyNotificationsHeader({
   controller: c,
