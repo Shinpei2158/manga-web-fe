@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -11,16 +10,15 @@ import {
 } from "@/components/ui/table";
 import { Edit, Trash2, ArchiveRestore } from "lucide-react";
 
-export default function EmojiPackTable({ packs, onEdit, onDelete }: any) {
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
-
-    const totalPages = Math.ceil((packs?.length || 0) / pageSize);
-
-    const paginatedPacks = (packs || []).slice(
-        (page - 1) * pageSize,
-        page * pageSize
-    );
+export default function EmojiPackTable({
+    packs,
+    onEdit,
+    onDelete,
+    page,
+    totalPages,
+    onPageChange,
+}: any) {
+    const safeTotalPages = Math.max(totalPages || 1, 1);
 
     const getPages = () => {
         const pages: (number | string)[] = [];
@@ -61,7 +59,7 @@ export default function EmojiPackTable({ packs, onEdit, onDelete }: any) {
                 </TableHeader>
 
                 <TableBody>
-                    {paginatedPacks.map((p: any) => (
+                    {packs.map((p: any) => (
                         <TableRow key={p._id}>
                             <TableCell>{p.name}</TableCell>
                             <TableCell>{p.price}</TableCell>
@@ -101,7 +99,7 @@ export default function EmojiPackTable({ packs, onEdit, onDelete }: any) {
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    onClick={() => onPageChange(Math.max(page - 1, 1))}
                     disabled={page === 1}
                 >
                     Prev
@@ -117,7 +115,7 @@ export default function EmojiPackTable({ packs, onEdit, onDelete }: any) {
                             key={idx}
                             size="sm"
                             variant={page === p ? "default" : "outline"}
-                            onClick={() => setPage(Number(p))}
+                            onClick={() => onPageChange(Number(p))}
                         >
                             {p}
                         </Button>
@@ -127,8 +125,8 @@ export default function EmojiPackTable({ packs, onEdit, onDelete }: any) {
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                    disabled={page === totalPages || totalPages === 0}
+                    onClick={() => onPageChange(Math.min(page + 1, safeTotalPages))}
+                    disabled={page === safeTotalPages || totalPages === 0}
                 >
                     Next
                 </Button>

@@ -22,7 +22,7 @@ export function AdminCommentsView({
       <AdminCommentsHeader me={c.me} roleNormalized={c.roleNormalized} />
       <AdminCommentsStats
         hiddenCount={c.hiddenCount}
-        totalCount={c.comments.length}
+        totalCount={c.totalItems}
         visibleCount={c.visibleCount}
       />
       <AdminCommentsQuickFilters controller={c} />
@@ -39,7 +39,7 @@ export function AdminCommentsView({
         onToggleVisibility={c.handleToggleVisibility}
         currentPage={c.currentPage}
         totalPages={c.totalPages}
-        totalItems={c.sortedComments.length}
+        totalItems={c.totalItems}
         onPageChange={c.setCurrentPage}
         actionLoading={c.actionLoading}
         sortColumn={c.sortColumn}

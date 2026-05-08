@@ -52,6 +52,20 @@ export function nextSortDirection(
 }
 
 export function mapCommentRow(comment: any, apiUrl?: string): Comment {
+  const storyTitle =
+    comment.chapter_id?.manga_id?.title ||
+    comment.manga?.title ||
+    "Unknown";
+  const storyIdRaw =
+    comment.chapter_id?.manga_id?._id ||
+    comment.chapter?.manga_id ||
+    comment.manga?._id ||
+    "";
+  const storyId = storyIdRaw ? String(storyIdRaw) : "";
+  const chapterTitle = comment.chapter_id?.title || comment.chapter?.title || "N/A";
+  const chapterIdRaw = comment.chapter_id?._id || comment.chapter?._id || "";
+  const chapterId = chapterIdRaw ? String(chapterIdRaw) : "";
+
   return {
     id: comment._id,
     commentId: comment._id?.slice(-6)?.toUpperCase?.() ?? "N/A",
@@ -59,10 +73,10 @@ export function mapCommentRow(comment: any, apiUrl?: string): Comment {
     userEmail: comment.user_id?.email || "",
     userRole: comment.user_id?.role || "",
     userAvatar: resolveAvatarUrl(comment.user_id?.avatar, apiUrl),
-    storyTitle: comment.chapter_id?.manga_id?.title || "Unknown",
-    storyId: comment.chapter_id?.manga_id?._id || "",
-    chapter: comment.chapter_id?.title || "N/A",
-    chapterId: comment.chapter_id?._id || "",
+    storyTitle,
+    storyId,
+    chapter: chapterTitle,
+    chapterId,
     content: comment.content ?? "",
     plainContent: extractPlainText(comment.content ?? ""),
     createdAt: comment.createdAt,

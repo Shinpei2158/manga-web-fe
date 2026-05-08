@@ -13,6 +13,7 @@ import {
     DialogDescription,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { resolveEmojiSrc } from "@/lib/emoji-url";
 
 export default function EmojiPackCard({
     pack,
@@ -64,7 +65,7 @@ export default function EmojiPackCard({
 
     const coverEmoji =
         pack.emojis && pack.emojis.length > 0
-            ? `${process.env.NEXT_PUBLIC_API_URL}${pack.emojis[0].skins[0].src}`
+            ? resolveEmojiSrc(pack.emojis[0]?.skins?.[0]?.src)
             : "/placeholder.svg?height=96&width=96&text=Emoji";
 
     return (

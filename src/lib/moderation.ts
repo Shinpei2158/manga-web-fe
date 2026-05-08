@@ -78,19 +78,55 @@ function mapQueueRow(row: QueueRowFromBE): QueueItem {
 export async function fetchQueue(params?: {
   status?: AIStatus | null;
   limit?: number;
-}): Promise<QueueItem[]> {
+  page?: number;
+  search?: string;
+  resolutionStatus?: ModerationResolutionStatus | null;
+  riskMin?: number;
+  riskMax?: number;
+  sortBy?: "title" | "mangaTitle" | "author" | "risk_score" | "updatedAt";
+  sortDir?: "asc" | "desc";
+}): Promise<{
+  items: QueueItem[];
+  total: number;
+  page: number;
+  limit: number;
+  serverPaginated: boolean;
+}> {
   const res = await api.get("/moderation/queue", {
     params: {
       ...(params?.status ? { status: params.status } : {}),
       ...(params?.limit ? { limit: params.limit } : {}),
+      ...(params?.page ? { page: params.page } : {}),
+      ...(params?.search ? { q: params.search } : {}),
+      ...(params?.resolutionStatus
+        ? { resolutionStatus: params.resolutionStatus }
+        : {}),
+      ...(typeof params?.riskMin === "number" ? { riskMin: params.riskMin } : {}),
+      ...(typeof params?.riskMax === "number" ? { riskMax: params.riskMax } : {}),
+      ...(params?.sortBy ? { sortBy: params.sortBy } : {}),
+      ...(params?.sortDir ? { sortDir: params.sortDir } : {}),
     },
   });
 
-  const rows: QueueRowFromBE[] = Array.isArray(res.data)
-    ? res.data
-    : [];
+  const payload = res.data;
+  const rows: QueueRowFromBE[] = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : Array.isArray(payload?.data)
+        ? payload.data
+        : [];
+  const total = Number(payload?.total ?? payload?.totalItems ?? rows.length);
+  const page = Number(payload?.page ?? params?.page ?? 1);
+  const limit = Number(payload?.limit ?? params?.limit ?? (rows.length || 1));
 
-  return rows.map(mapQueueRow);
+  return {
+    items: rows.map(mapQueueRow),
+    total,
+    page,
+    limit,
+    serverPaginated: !Array.isArray(payload),
+  };
 }
 
 export async function fetchModerationRecord(chapterId: string): Promise<ModerationRecord> {

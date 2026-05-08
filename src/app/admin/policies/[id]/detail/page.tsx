@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Pencil } from "lucide-react"
 import PolicyReader from "@/components/policies/policy-reader"
 
-const API_URL = "http://localhost:3333/api/policies"
+const API_URL = `${(process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "")}/api/policies`
 
 interface PolicyApiResponse {
   _id: string

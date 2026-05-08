@@ -7,6 +7,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { resolveEmojiSrc } from "@/lib/emoji-url";
 
 export default function EmojiPreviewModal({
     pack,
@@ -47,7 +48,7 @@ export default function EmojiPreviewModal({
                             "
                         >
                             <Image
-                                src={`${process.env.NEXT_PUBLIC_API_URL}${emoji.skins[0].src}`}
+                                src={resolveEmojiSrc(emoji?.skins?.[0]?.src)}
                                 alt={`emoji-${idx}`}
                                 fill
                                 sizes="100px"

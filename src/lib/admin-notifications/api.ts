@@ -64,7 +64,12 @@ export async function fetchAdminNotificationOverview(apiUrl: string) {
   }
 
   if (sentResp.ok) {
-    const sentData: BackendNotification[] = await sentResp.json();
+    const sentPayload = await sentResp.json();
+    const sentData: BackendNotification[] = Array.isArray(sentPayload)
+      ? sentPayload
+      : Array.isArray(sentPayload?.items)
+        ? sentPayload.items
+        : [];
     overview.saved = (sentData ?? []).filter((item) => item.is_save).length;
 
     if (!statsResp.ok) {
@@ -96,15 +101,33 @@ export async function fetchAdminNotifications({
   apiUrl,
   search,
   status,
+  saved,
+  sort,
+  page,
+  limit,
 }: {
   apiUrl: string;
   search: string;
   status: string;
-}): Promise<NotificationVM[]> {
+  saved: string;
+  sort: string;
+  page: number;
+  limit: number;
+}): Promise<{
+  items: NotificationVM[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> {
   const url = new URL(`${apiUrl}/api/admin/notifications/sent`);
 
   if (status !== "All") url.searchParams.set("status", status);
+  if (saved !== "All") url.searchParams.set("saved", saved);
+  if (sort !== "Newest") url.searchParams.set("sort", sort);
   if (search) url.searchParams.set("q", search);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("limit", String(limit));
 
   const resp = await fetch(url.toString(), { credentials: "include" });
 
@@ -117,8 +140,27 @@ export async function fetchAdminNotifications({
     throw new Error(data?.message ?? "Failed to load notifications.");
   }
 
-  const data: BackendNotification[] = await resp.json();
-  return (data ?? []).map(mapToVM);
+  const data = await resp.json();
+  const rows: BackendNotification[] = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.items)
+      ? data.items
+      : [];
+
+  const total = Number(data?.total ?? rows.length);
+  const currentPage = Number(data?.page ?? page);
+  const currentLimit = Number(data?.limit ?? limit);
+  const totalPages = Number(
+    data?.totalPages ?? Math.max(1, Math.ceil(total / Math.max(currentLimit, 1))),
+  );
+
+  return {
+    items: rows.map(mapToVM),
+    total,
+    page: currentPage,
+    limit: currentLimit,
+    totalPages,
+  };
 }
 
 export async function sendAdminNotification({

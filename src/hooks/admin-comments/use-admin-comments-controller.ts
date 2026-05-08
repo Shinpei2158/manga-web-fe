@@ -16,12 +16,10 @@ import {
 } from "@/lib/admin-comments/constants";
 import type { CommentMe, CommentOption } from "@/lib/admin-comments/types";
 import {
-  isNewest24h,
   mapChapterOption,
   mapCommentRow,
   mapMangaOption,
   nextSortDirection,
-  sortComments,
 } from "@/lib/admin-comments/utils";
 
 export function useAdminCommentsController() {
@@ -34,6 +32,8 @@ export function useAdminCommentsController() {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [sortColumn, setSortColumn] = useState<CommentSortColumn>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [filters, setFilters] = useState<FilterState>(emptyCommentFilters);
@@ -41,6 +41,12 @@ export function useAdminCommentsController() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [stats, setStats] = useState({
+    visibleCount: 0,
+    hiddenCount: 0,
+    newest24hCount: 0,
+    topMangas: [] as Array<{ id: string; title: string; count: number }>,
+  });
 
   const roleNormalized = useMemo(
     () => String(me?.role || "").toLowerCase(),
@@ -58,47 +64,18 @@ export function useAdminCommentsController() {
 
   useEffect(() => {
     const controller = new AbortController();
-
     (async () => {
-      if (!apiUrl) {
-        setError("Missing NEXT_PUBLIC_API_URL");
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
+      if (!apiUrl) return;
       try {
-        const [commentResponse, mangaResponse] = await Promise.all([
-          axios.get(`${apiUrl}/api/comment/all`, {
-            withCredentials: true,
-            signal: controller.signal,
-          }),
-          axios.get(`${apiUrl}/api/manga`, {
-            withCredentials: true,
-            signal: controller.signal,
-          }),
-        ]);
-
-        setComments((commentResponse.data || []).map((row: any) => mapCommentRow(row, apiUrl)));
+        const mangaResponse = await axios.get(`${apiUrl}/api/manga`, {
+          withCredentials: true,
+          signal: controller.signal,
+        });
         setMangas((mangaResponse.data || []).map(mapMangaOption));
-      } catch (error: any) {
-        if (axios.isCancel(error)) return;
-
-        console.error(
-          "[Admin Comments] Load error:",
-          error.response?.status,
-          error.response?.data || error.message,
-        );
-        setError(
-          `Unable to load comments. ${error.response?.status || ""} ${error.message}`,
-        );
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error("[Admin Comments] Load mangas error:", error);
       }
     })();
-
     return () => controller.abort();
   }, [apiUrl]);
 
@@ -136,6 +113,79 @@ export function useAdminCommentsController() {
     setCurrentPage(1);
   }, [filters, sortColumn, sortDirection, onlyNewest24h]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      if (!apiUrl) {
+        setError("Missing NEXT_PUBLIC_API_URL");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get(`${apiUrl}/api/comment/all`, {
+          withCredentials: true,
+          signal: controller.signal,
+          params: {
+            page: currentPage,
+            limit: COMMENTS_ITEMS_PER_PAGE,
+            storyId: filters.manga || undefined,
+            chapterId: filters.chapter || undefined,
+            status: filters.status || undefined,
+            user: filters.user?.trim() || undefined,
+            search: filters.search?.trim() || undefined,
+            sortBy: sortColumn,
+            sortDir: sortDirection,
+            onlyNewest24h,
+          },
+        });
+
+        const payload = response.data || {};
+        const rows = Array.isArray(payload.data) ? payload.data : [];
+        setComments(rows.map((row: any) => mapCommentRow(row, apiUrl)));
+        setTotalItems(Number(payload.total || 0));
+        setTotalPages(Number(payload.totalPages || 1));
+        setStats({
+          visibleCount: Number(payload?.stats?.visibleCount || 0),
+          hiddenCount: Number(payload?.stats?.hiddenCount || 0),
+          newest24hCount: Number(payload?.stats?.newest24hCount || 0),
+          topMangas: Array.isArray(payload?.stats?.topMangas)
+            ? payload.stats.topMangas
+            : [],
+        });
+      } catch (error: any) {
+        if (axios.isCancel(error)) return;
+        console.error(
+          "[Admin Comments] Load error:",
+          error.response?.status,
+          error.response?.data || error.message,
+        );
+        setError(`Unable to load comments. ${error.response?.status || ""} ${error.message}`);
+        setComments([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [
+    apiUrl,
+    currentPage,
+    filters.chapter,
+    filters.manga,
+    filters.search,
+    filters.status,
+    filters.user,
+    onlyNewest24h,
+    sortColumn,
+    sortDirection,
+  ]);
+
   const handleFiltersChange = (nextFilters: FilterState) => {
     if (!nextFilters.manga || nextFilters.manga === COMMENT_ALL.MANGA) {
       nextFilters = { ...nextFilters, chapter: COMMENT_ALL.CHAPTER };
@@ -149,36 +199,7 @@ export function useAdminCommentsController() {
     setOnlyNewest24h(false);
   };
 
-  const filteredComments = useMemo(
-    () =>
-      comments.filter((comment) => {
-        if (filters.manga !== COMMENT_ALL.MANGA && comment.storyId !== filters.manga) {
-          return false;
-        }
-        if (filters.chapter !== COMMENT_ALL.CHAPTER && comment.chapterId !== filters.chapter) {
-          return false;
-        }
-        if (filters.status !== COMMENT_ALL.STATUS && comment.status !== filters.status) {
-          return false;
-        }
-        if (filters.user && !comment.username.toLowerCase().includes(filters.user.toLowerCase())) {
-          return false;
-        }
-        if (filters.search && !commentMatchesSearch(comment, filters.search)) {
-          return false;
-        }
-        if (onlyNewest24h && !isNewest24h(comment)) {
-          return false;
-        }
-        return true;
-      }),
-    [comments, filters, onlyNewest24h],
-  );
-
-  const sortedComments = useMemo(
-    () => sortComments(filteredComments, sortColumn, sortDirection),
-    [filteredComments, sortColumn, sortDirection],
-  );
+  const sortedComments = useMemo(() => comments, [comments]);
 
   useEffect(() => {
     if (!selectedComment) return;
@@ -198,14 +219,7 @@ export function useAdminCommentsController() {
     }
   }, [selectedComment, sortedComments]);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(sortedComments.length / COMMENTS_ITEMS_PER_PAGE),
-  );
-  const paginatedComments = sortedComments.slice(
-    (currentPage - 1) * COMMENTS_ITEMS_PER_PAGE,
-    currentPage * COMMENTS_ITEMS_PER_PAGE,
-  );
+  const paginatedComments = sortedComments;
 
   const handleSort = (column: CommentSortColumn) => {
     setSortDirection((currentDirection) =>
@@ -227,14 +241,10 @@ export function useAdminCommentsController() {
       await axios.patch(`${apiUrl}/api/comment/toggle/${id}`, {}, {
         withCredentials: true,
       });
-
       setComments((previous) =>
         previous.map((comment) =>
           comment.id === id
-            ? {
-                ...comment,
-                status: currentStatus === "visible" ? "hidden" : "visible",
-              }
+            ? { ...comment, status: currentStatus === "visible" ? "hidden" : "visible" }
             : comment,
         ),
       );
@@ -248,10 +258,13 @@ export function useAdminCommentsController() {
     }
   };
 
-  const visibleCount = comments.filter((comment) => comment.status === "visible").length;
-  const hiddenCount = comments.filter((comment) => comment.status === "hidden").length;
-  const newest24hCount = comments.filter(isNewest24h).length;
-  const quickMangaChips = useMemo(() => buildQuickMangaChips(comments), [comments]);
+  const visibleCount = stats.visibleCount || comments.filter((comment) => comment.status === "visible").length;
+  const hiddenCount = stats.hiddenCount || comments.filter((comment) => comment.status === "hidden").length;
+  const newest24hCount = stats.newest24hCount;
+  const quickMangaChips = useMemo(
+    () => stats.topMangas.map((item) => ({ id: item.id, title: item.title, count: item.count })),
+    [stats.topMangas],
+  );
   const selectedCommentIndex = selectedComment
     ? sortedComments.findIndex((comment) => comment.id === selectedComment.id)
     : -1;
@@ -308,44 +321,10 @@ export function useAdminCommentsController() {
     sortColumn,
     sortDirection,
     sortedComments,
+    totalItems,
     totalPages,
     visibleCount,
   };
-}
-
-function commentMatchesSearch(comment: Comment, search: string) {
-  const query = search.toLowerCase();
-  const searchableValues = [
-    comment.plainContent,
-    comment.username,
-    comment.userEmail,
-    comment.storyTitle,
-    comment.chapter,
-    comment.commentId,
-  ]
-    .join(" ")
-    .toLowerCase();
-
-  return searchableValues.includes(query);
-}
-
-function buildQuickMangaChips(comments: Comment[]) {
-  const counts = new Map<string, { title: string; count: number }>();
-
-  comments.forEach((comment) => {
-    if (!comment.storyId) return;
-
-    const current = counts.get(comment.storyId);
-    counts.set(comment.storyId, {
-      title: comment.storyTitle,
-      count: (current?.count || 0) + 1,
-    });
-  });
-
-  return Array.from(counts.entries())
-    .map(([id, value]) => ({ id, ...value }))
-    .sort((first, second) => second.count - first.count)
-    .slice(0, 3);
 }
 
 export type AdminCommentsController = ReturnType<typeof useAdminCommentsController>;

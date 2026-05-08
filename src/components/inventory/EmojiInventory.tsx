@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import EmojiPreviewModal from "@/components/emoji-shop/EmojiPreviewModal";
+import { resolveEmojiSrc } from "@/lib/emoji-url";
 
 export default function EmojiInventory({ emojiPacks }: { emojiPacks: any[] }) {
     const [selectedPack, setSelectedPack] = useState<any | null>(null);
@@ -22,7 +23,7 @@ export default function EmojiInventory({ emojiPacks }: { emojiPacks: any[] }) {
                 {emojiPacks.map((pack) => {
                     const cover =
                         pack.emojis?.length > 0
-                            ? `${process.env.NEXT_PUBLIC_API_URL}${pack.emojis[0].skins[0].src}`
+                            ? resolveEmojiSrc(pack.emojis[0]?.skins?.[0]?.src)
                             : "/placeholder.svg?height=96&width=96&text=Emoji";
 
                     return (

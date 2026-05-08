@@ -17,7 +17,7 @@ import {
 
 import { toast } from "sonner";
 import AdminLayout from "../adminLayout/page";
-import ReportModal from "@/components/ui/report-modal";
+import ReportModal from "@/components/ui/report-modal"
 import CommunityReportModal from "@/components/ui/community-report-modal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -227,13 +227,25 @@ export default function ReportsPage() {
     }
 
     const endpoint = `${API}/api/reports`;
+    const activeSearch = views[activeTab].searchTerm.trim();
 
     setLoadingReports(true);
     setListError(null);
 
     try {
-      const response = await axios.get(endpoint, { withCredentials: true });
-      setReports(Array.isArray(response.data) ? response.data : []);
+      const response = await axios.get(endpoint, {
+        withCredentials: true,
+        params: {
+          q: activeSearch || undefined,
+          page: 1,
+          limit: 300,
+        },
+      });
+      if (Array.isArray(response.data)) {
+        setReports(response.data);
+      } else {
+        setReports(Array.isArray((response.data as any)?.items) ? (response.data as any).items : []);
+      }
     } catch (err: any) {
       logAxiosError("[Admin Reports]", endpoint, err);
       setListError(getErrorMessage(err));
@@ -241,7 +253,7 @@ export default function ReportsPage() {
     } finally {
       setLoadingReports(false);
     }
-  }, [API]);
+  }, [API, activeTab, views]);
 
   useEffect(() => {
     fetchRole();
@@ -330,7 +342,7 @@ export default function ReportsPage() {
     () =>
       views.content.selectedGroupKey
         ? contentGroups.find((group) => group.key === views.content.selectedGroupKey) ||
-          null
+        null
         : null,
     [contentGroups, views.content.selectedGroupKey]
   );
@@ -339,8 +351,8 @@ export default function ReportsPage() {
     () =>
       views.community.selectedGroupKey
         ? communityGroups.find(
-            (group) => group.key === views.community.selectedGroupKey
-          ) || null
+          (group) => group.key === views.community.selectedGroupKey
+        ) || null
         : null,
     [communityGroups, views.community.selectedGroupKey]
   );
@@ -349,7 +361,7 @@ export default function ReportsPage() {
     () =>
       views.content.confirmGroupKey
         ? contentGroups.find((group) => group.key === views.content.confirmGroupKey) ||
-          null
+        null
         : null,
     [contentGroups, views.content.confirmGroupKey]
   );
@@ -358,8 +370,8 @@ export default function ReportsPage() {
     () =>
       views.community.confirmGroupKey
         ? communityGroups.find(
-            (group) => group.key === views.community.confirmGroupKey
-          ) || null
+          (group) => group.key === views.community.confirmGroupKey
+        ) || null
         : null,
     [communityGroups, views.community.confirmGroupKey]
   );
@@ -441,7 +453,7 @@ export default function ReportsPage() {
       return (
         linkedReportCode &&
         String(report.reportCode || "").toLowerCase() ===
-          linkedReportCode.toLowerCase()
+        linkedReportCode.toLowerCase()
       );
     });
 

@@ -15,6 +15,8 @@ import { confirmAlert } from "react-confirm-alert";
 export default function EmojiPackManagement() {
   const [packs, setPacks] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editPack, setEditPack] = useState<any | null>(null);
   const { toast } = useToast();
@@ -25,9 +27,20 @@ export default function EmojiPackManagement() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/emoji-pack`,
         {
           withCredentials: true,
+          params: {
+            page: currentPage,
+            limit: 10,
+            search: searchTerm.trim() || undefined,
+          },
         }
       );
-      setPacks(res.data);
+      if (Array.isArray(res.data)) {
+        setPacks(res.data);
+        setTotalPages(1);
+      } else {
+        setPacks(Array.isArray(res.data?.items) ? res.data.items : []);
+        setTotalPages(Number(res.data?.totalPages || 1));
+      }
     } catch (err) {
       console.error(err);
       toast({
@@ -40,7 +53,11 @@ export default function EmojiPackManagement() {
 
   useEffect(() => {
     fetchPacks();
-  }, []);
+  }, [currentPage, searchTerm]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const handleDelete = (id: string) => {
     confirmAlert({
@@ -85,10 +102,6 @@ export default function EmojiPackManagement() {
     });
   };
 
-  const filteredPacks = packs.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -119,9 +132,12 @@ export default function EmojiPackManagement() {
         </div>
 
         <EmojiPackTable
-          packs={filteredPacks}
+          packs={packs}
           onEdit={setEditPack}
           onDelete={handleDelete}
+          page={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
         />
 
         {isAddDialogOpen && (

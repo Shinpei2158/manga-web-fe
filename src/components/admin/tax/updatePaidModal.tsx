@@ -17,6 +17,7 @@ import {
   FileText,
   User,
   Edit,
+  Download,
 } from "lucide-react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
@@ -264,9 +265,22 @@ function FilePreviewFromServer({
   onRemove,
 }: any) {
   const [open, setOpen] = useState(false);
-  const fileUrl = `${apiUrl}/proofFiles/${taxId}/${authorId}/${fileName}`;
-  const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(fileName);
-  const isPdf = /\.pdf$/i.test(fileName);
+  const fileUrl = /^https?:\/\//i.test(fileName)
+    ? fileName
+    : `${apiUrl}/proofFiles/${taxId}/${authorId}/${fileName}`;
+  const displayName = (() => {
+    try {
+      if (/^https?:\/\//i.test(fileName)) {
+        return decodeURIComponent(new URL(fileName).pathname.split("/").pop() || "file");
+      }
+      return fileName;
+    } catch {
+      return fileName;
+    }
+  })();
+  const downloadUrl = `${apiUrl}/api/tax-settlement/download-proof-file?url=${encodeURIComponent(fileUrl)}&fileName=${encodeURIComponent(displayName)}`;
+  const isImage = /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(fileUrl);
+  const isPdf = /\.pdf(\?.*)?$/i.test(fileUrl);
 
   return (
     <>
@@ -303,7 +317,7 @@ function FilePreviewFromServer({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-1 flex flex-col bg-slate-900 border-none">
           <DialogHeader className="p-2 bg-white rounded-t-lg">
-            <DialogTitle className="text-sm truncate">{fileName}</DialogTitle>
+            <DialogTitle className="text-sm truncate">{displayName}</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-auto flex items-center justify-center bg-slate-900">
             {isImage ? (
@@ -319,12 +333,20 @@ function FilePreviewFromServer({
                 <FileText className="w-16 h-16 mx-auto mb-4 opacity-20" />
                 <p>This file type cannot be previewed.</p>
                 <Button asChild variant="outline" className="mt-4">
-                  <a href={fileUrl} target="_blank">
+                  <a href={downloadUrl} target="_blank">
                     Download
                   </a>
                 </Button>
               </div>
             )}
+          </div>
+          <div className="p-2 bg-white border-t">
+            <Button asChild variant="outline" size="sm">
+              <a href={downloadUrl} target="_blank" rel="noreferrer">
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </a>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

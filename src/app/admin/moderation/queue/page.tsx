@@ -37,6 +37,8 @@ export default function ModerationQueuePage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [serverTotalItems, setServerTotalItems] = useState(0);
+  const [usesServerPagination, setUsesServerPagination] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -46,21 +48,42 @@ export default function ModerationQueuePage() {
       setErr(null);
 
       try {
-        const rows = await fetchQueue({
+        const activeSort = sorting[0];
+        const response = await fetchQueue({
           status: filters.status,
-          limit: 500,
+          search: filters.search.trim() || undefined,
+          resolutionStatus: filters.resolutionStatus,
+          riskMin: filters.riskRange[0],
+          riskMax: filters.riskRange[1],
+          sortBy: (activeSort?.id as
+            | "title"
+            | "mangaTitle"
+            | "author"
+            | "risk_score"
+            | "updatedAt"
+            | undefined),
+          sortDir: activeSort ? (activeSort.desc ? "desc" : "asc") : undefined,
+          page,
+          limit: pageSize,
         });
-        setData(rows);
+        setUsesServerPagination(response.serverPaginated);
+        setServerTotalItems(response.total);
+        setData(response.items);
       } catch (e: any) {
         setErr(e?.message || "Load queue failed");
         setData([]);
+        setServerTotalItems(0);
       } finally {
         setLoading(false);
       }
     })();
-  }, [filters.status]);
+  }, [filters, page, pageSize, sorting]);
 
   const filteredItems = useMemo(() => {
+    if (usesServerPagination) {
+      return data;
+    }
+
     const s = filters.search.trim().toLowerCase();
 
     return data.filter((item) => {
@@ -86,9 +109,13 @@ export default function ModerationQueuePage() {
 
       return matchesSearch && matchesRisk && matchesResolution;
     });
-  }, [data, filters]);
+  }, [data, filters, usesServerPagination]);
 
   const sortedItems = useMemo(() => {
+    if (usesServerPagination) {
+      return filteredItems;
+    }
+
     const activeSort = sorting[0];
     if (!activeSort) return filteredItems;
 
@@ -122,15 +149,19 @@ export default function ModerationQueuePage() {
     });
 
     return sorted;
-  }, [filteredItems, sorting]);
+  }, [filteredItems, sorting, usesServerPagination]);
 
-  const totalItems = sortedItems.length;
+  const totalItems = usesServerPagination ? serverTotalItems : sortedItems.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-  const currentPage = Math.min(page, totalPages);
+  const currentPage = usesServerPagination ? page : Math.min(page, totalPages);
   const paginatedItems = useMemo(() => {
+    if (usesServerPagination) {
+      return sortedItems;
+    }
+
     const start = (currentPage - 1) * pageSize;
     return sortedItems.slice(start, start + pageSize);
-  }, [currentPage, pageSize, sortedItems]);
+  }, [currentPage, pageSize, sortedItems, usesServerPagination]);
 
   useEffect(() => {
     setPage(1);

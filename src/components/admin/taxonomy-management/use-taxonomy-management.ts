@@ -24,6 +24,8 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
   const { toast } = useToast();
 
   const [items, setItems] = useState<TaxonomyItem[]>([]);
+  const [serverTotal, setServerTotal] = useState(0);
+  const [usesServerPagination, setUsesServerPagination] = useState(false);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | TaxonomyStatus>("all");
   const [sort, setSort] = useState<TaxonomySortKey>("updatedAt.desc");
@@ -52,8 +54,29 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
     setError(null);
 
     try {
-      const response = await axios.get(endpoint, { withCredentials: true });
-      setItems(normalizeTaxonomyItems(response.data));
+      const [sortBy, sortDir] = sort.split(".") as [string, "asc" | "desc"];
+      const response = await axios.get(endpoint, {
+        withCredentials: true,
+        params: {
+          page,
+          limit,
+          search: search.trim() || undefined,
+          status: filterStatus !== "all" ? filterStatus : undefined,
+          sortBy,
+          sortDir,
+        },
+      });
+
+      if (Array.isArray(response.data)) {
+        setUsesServerPagination(false);
+        setItems(normalizeTaxonomyItems(response.data));
+        setServerTotal(response.data.length);
+      } else {
+        const normalized = normalizeTaxonomyItems(response.data);
+        setUsesServerPagination(true);
+        setItems(normalized);
+        setServerTotal(Number((response.data as any)?.total ?? normalized.length));
+      }
     } catch (error) {
       console.error(`fetch ${config.itemLabel} error:`, error);
       setError(`Failed to load ${config.itemLabel.toLowerCase()}s`);
@@ -64,7 +87,7 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
     } finally {
       setLoading(false);
     }
-  }, [config.itemLabel, endpoint, toast]);
+  }, [config.itemLabel, endpoint, filterStatus, limit, page, search, sort, toast]);
 
   useEffect(() => {
     void fetchItems();
@@ -76,21 +99,24 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
 
   const filteredItems = useMemo(
     () =>
-      filterAndSortTaxonomyItems({
-        items,
-        search,
-        status: filterStatus,
-        sort,
-      }),
-    [filterStatus, items, search, sort],
+      usesServerPagination
+        ? items
+        : filterAndSortTaxonomyItems({
+            items,
+            search,
+            status: filterStatus,
+            sort,
+          }),
+    [filterStatus, items, search, sort, usesServerPagination],
   );
 
-  const total = filteredItems.length;
+  const total = usesServerPagination ? serverTotal : filteredItems.length;
   const pageCount = Math.max(1, Math.ceil(total / limit));
   const visibleItems = useMemo(() => {
+    if (usesServerPagination) return filteredItems;
     const start = (page - 1) * limit;
     return filteredItems.slice(start, start + limit);
-  }, [filteredItems, limit, page]);
+  }, [filteredItems, limit, page, usesServerPagination]);
 
   const handleAddItem = async () => {
     if (!endpoint || !canAdd) return;

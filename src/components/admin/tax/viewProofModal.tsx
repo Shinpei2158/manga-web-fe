@@ -174,10 +174,23 @@ function FilePreviewFromServer({
   apiUrl?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const fileUrl = `${apiUrl}/proofFiles/${taxId}/${authorId}/${file}`;
+  const fileUrl = /^https?:\/\//i.test(file)
+    ? file
+    : `${apiUrl}/proofFiles/${taxId}/${authorId}/${file}`;
+  const fileName = (() => {
+    try {
+      if (/^https?:\/\//i.test(file)) {
+        return decodeURIComponent(new URL(file).pathname.split("/").pop() || "file");
+      }
+      return file;
+    } catch {
+      return file;
+    }
+  })();
+  const downloadUrl = `${apiUrl}/api/tax-settlement/download-proof-file?url=${encodeURIComponent(fileUrl)}&fileName=${encodeURIComponent(fileName)}`;
 
-  const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(file);
-  const isPdf = /\.pdf$/i.test(file);
+  const isImage = /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(fileUrl);
+  const isPdf = /\.pdf(\?.*)?$/i.test(fileUrl);
 
   return (
     <>
@@ -211,7 +224,7 @@ function FilePreviewFromServer({
         <DialogContent className="max-w-4xl w-[90vw]">
           <DialogHeader className="flex flex-row items-center justify-between pr-8">
             <DialogTitle className="truncate flex-1">
-              Preview: {file}
+              Preview: {fileName}
             </DialogTitle>
           </DialogHeader>
 
@@ -240,6 +253,21 @@ function FilePreviewFromServer({
               </div>
             )}
           </div>
+
+          <DialogFooter className="pt-3">
+            <Button asChild variant="outline">
+              <a href={downloadUrl} target="_blank" rel="noreferrer">
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </a>
+            </Button>
+            <Button asChild variant="ghost">
+              <a href={fileUrl} target="_blank" rel="noreferrer">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open source
+              </a>
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

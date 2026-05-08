@@ -16,6 +16,7 @@ import {
   Save,
   FileText,
   ExternalLink,
+  Download,
   ImageIcon,
   Edit,
 } from "lucide-react";
@@ -41,6 +42,13 @@ export default function UpdatePayoutModal({
   const [existingFiles, setExistingFiles] = useState<string[]>(
     payout.bankBatchRef || [],
   );
+  const getFileName = (url: string) => {
+    try {
+      return decodeURIComponent(new URL(url).pathname.split("/").pop() || "file");
+    } catch {
+      return "file";
+    }
+  };
 
   const removeExistingFile = (fileName: string) => {
     setExistingFiles((prev) => prev.filter((f) => f !== fileName));
@@ -132,6 +140,8 @@ export default function UpdatePayoutModal({
             <div className="grid grid-cols-2 gap-3">
               {existingFiles.map((file) => {
                 const fileUrl = `${file}`;
+                const parsedName = getFileName(fileUrl);
+                const downloadUrl = `${apiUrl}/api/payout-settlement/download-bank-file?url=${encodeURIComponent(fileUrl)}&fileName=${encodeURIComponent(parsedName)}`;
                 const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(file);
                 return (
                   <div
@@ -163,6 +173,15 @@ export default function UpdatePayoutModal({
                           title="Open fullscreen"
                         >
                           <ExternalLink className="w-4 h-4 text-slate-900" />
+                        </a>
+                        <a
+                          href={downloadUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 bg-white rounded-full hover:bg-slate-100"
+                          title="Download file"
+                        >
+                          <Download className="w-4 h-4 text-slate-900" />
                         </a>
                       </div>
 

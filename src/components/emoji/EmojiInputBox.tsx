@@ -6,6 +6,7 @@ import data from "@emoji-mart/data"
 import { Smile } from "lucide-react"
 import { useTheme } from "next-themes"
 import axios from "axios"
+import { resolveEmojiSrc } from "@/lib/emoji-url"
 
 interface EmojiInputBoxProps {
     onChange?: (html: string) => void
@@ -123,7 +124,7 @@ export default function EmojiInputBox({ onChange, clear }: EmojiInputBoxProps) {
             name: e.name,
             keywords: [],
             skins: e.skins.map((s: { src: string }) => ({
-                src: `${process.env.NEXT_PUBLIC_API_URL}${s.src}`
+                src: resolveEmojiSrc(s.src)
             }))
         })),
         price: pack.price

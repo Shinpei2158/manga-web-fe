@@ -14,11 +14,9 @@ import type { AdminNotificationFilters } from "@/lib/admin-notifications/types";
 import {
   fetchAdminNotificationOverview,
   fetchAdminNotifications,
-  fetchAdminUsersMap,
   logNotificationFetchError,
   sendAdminNotification,
 } from "@/lib/admin-notifications/api";
-import { processNotifications } from "@/lib/admin-notifications/utils";
 
 const API = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -42,6 +40,8 @@ export function useAdminNotificationsController() {
     unread: 0,
   });
   const [usersMap, setUsersMap] = useState<Record<string, string>>({});
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchOverview = useCallback(async () => {
     try {
@@ -51,24 +51,21 @@ export function useAdminNotificationsController() {
     }
   }, []);
 
-  const fetchUsersMap = useCallback(async () => {
-    try {
-      setUsersMap(await fetchAdminUsersMap(API));
-    } catch (error) {
-      console.error("[Admin UsersMap] Network error:", error);
-    }
-  }, []);
-
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      setNotifications(
-        await fetchAdminNotifications({
-          apiUrl: API,
-          search: filters.search,
-          status: filters.status,
-        }),
-      );
+      const response = await fetchAdminNotifications({
+        apiUrl: API,
+        search: filters.search,
+        status: filters.status,
+        saved: filters.saved,
+        sort: filters.sort,
+        page: currentPage,
+        limit: ADMIN_NOTIFICATIONS_PAGE_SIZE,
+      });
+      setNotifications(response.items);
+      setTotalItems(response.total);
+      setTotalPages(response.totalPages);
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -76,15 +73,17 @@ export function useAdminNotificationsController() {
           : "Failed to load notifications (network error).",
       );
       setNotifications([]);
+      setTotalItems(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  }, [filters.search, filters.status]);
+  }, [currentPage, filters.saved, filters.search, filters.sort, filters.status]);
 
   useEffect(() => {
-    void fetchUsersMap();
+    setUsersMap({});
     void fetchOverview();
-  }, [fetchUsersMap, fetchOverview]);
+  }, [fetchOverview]);
 
   useEffect(() => {
     void fetchNotifications();
@@ -106,19 +105,7 @@ export function useAdminNotificationsController() {
     setCurrentPage(1);
   }, [filters.status, filters.saved, filters.search, filters.sort]);
 
-  const processedNotifications = useMemo(
-    () => processNotifications(notifications, filters),
-    [notifications, filters],
-  );
-  const totalItems = processedNotifications.length;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(totalItems / ADMIN_NOTIFICATIONS_PAGE_SIZE),
-  );
-  const paginatedNotifications = processedNotifications.slice(
-    (currentPage - 1) * ADMIN_NOTIFICATIONS_PAGE_SIZE,
-    currentPage * ADMIN_NOTIFICATIONS_PAGE_SIZE,
-  );
+  const paginatedNotifications = useMemo(() => notifications, [notifications]);
 
   const handleViewDetail = (notification: NotificationVM) => {
     setSelectedNotification(notification);

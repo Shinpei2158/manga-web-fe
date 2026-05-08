@@ -53,6 +53,13 @@ export default function ViewBankRefModal({
   payout: PayoutSettlement;
 }) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const getFileName = (url: string) => {
+    try {
+      return decodeURIComponent(new URL(url).pathname.split("/").pop() || "file");
+    } catch {
+      return "file";
+    }
+  };
 
   return (
     <Dialog>
@@ -100,6 +107,8 @@ export default function ViewBankRefModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {payout.bankBatchRef?.map((fileName, idx) => {
               const fileUrl = `${fileName}`;
+              const parsedName = getFileName(fileUrl);
+              const downloadUrl = `${apiUrl}/api/payout-settlement/download-bank-file?url=${encodeURIComponent(fileUrl)}&fileName=${encodeURIComponent(parsedName)}`;
               const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(fileName);
 
               return (
@@ -134,6 +143,15 @@ export default function ViewBankRefModal({
                         title="Open fullscreen"
                       >
                         <ExternalLink className="w-4 h-4 text-slate-900" />
+                      </a>
+                      <a
+                        href={downloadUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-2 bg-white rounded-full hover:bg-slate-100"
+                        title="Download file"
+                      >
+                        <Download className="w-4 h-4 text-slate-900" />
                       </a>
                     </div>
                   </div>

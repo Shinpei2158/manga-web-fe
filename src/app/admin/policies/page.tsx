@@ -70,7 +70,7 @@ type SortField =
   | "isPublic"
   | "updatedAt"
 
-const API_BASE = "http://localhost:3333/api/policies"
+const API_BASE = `${(process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "")}/api/policies`
 
 function getStatusColor(status: PolicyStatus) {
   switch (status) {
@@ -205,6 +205,8 @@ export default function AdminPoliciesPage() {
   const router = useRouter()
 
   const [policies, setPolicies] = useState<Policy[]>([])
+  const [totalPolicies, setTotalPolicies] = useState(0)
+  const [usesServerPagination, setUsesServerPagination] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState<StatusFilter>("all")
   const [visibilityFilter, setVisibilityFilter] =
@@ -220,16 +222,46 @@ export default function AdminPoliciesPage() {
   const fetchPolicies = async () => {
     try {
       setLoading(true)
-      const res = await axios.get(API_BASE)
+      const res = await axios.get(API_BASE, {
+        params: {
+          search: searchQuery.trim() || undefined,
+          status: filterStatus !== "all" ? filterStatus : undefined,
+          visibility:
+            visibilityFilter === "all"
+              ? undefined
+              : visibilityFilter === "public"
+                ? "public"
+                : "internal",
+          sortField,
+          sortOrder,
+          page: currentPage,
+          limit: itemsPerPage,
+        },
+      })
       if (Array.isArray(res.data)) {
+        setUsesServerPagination(false)
         setPolicies(res.data)
+        setTotalPolicies(res.data.length)
       } else {
-        console.warn("Unexpected API response:", res.data)
-        setPolicies([])
+        const nextItems = Array.isArray((res.data as any)?.items)
+          ? (res.data as any).items
+          : Array.isArray((res.data as any)?.data)
+            ? (res.data as any).data
+            : []
+        const nextTotal = Number(
+          (res.data as any)?.total ??
+            (res.data as any)?.totalItems ??
+            nextItems.length
+        )
+
+        setUsesServerPagination(true)
+        setPolicies(nextItems)
+        setTotalPolicies(nextTotal)
       }
     } catch (error) {
       console.error("Failed to fetch policies:", error)
       setPolicies([])
+      setTotalPolicies(0)
     } finally {
       setLoading(false)
     }
@@ -237,7 +269,14 @@ export default function AdminPoliciesPage() {
 
   useEffect(() => {
     fetchPolicies()
-  }, [])
+  }, [
+    currentPage,
+    filterStatus,
+    searchQuery,
+    sortField,
+    sortOrder,
+    visibilityFilter,
+  ])
 
   useEffect(() => {
     setCurrentPage(1)
@@ -245,16 +284,20 @@ export default function AdminPoliciesPage() {
 
   const counts = useMemo(() => {
     return {
-      total: policies.length,
+      total: usesServerPagination ? totalPolicies : policies.length,
       active: policies.filter((p) => p.status === "Active").length,
       draft: policies.filter((p) => p.status === "Draft").length,
       archived: policies.filter((p) => p.status === "Archived").length,
       public: policies.filter((p) => p.isPublic).length,
       internal: policies.filter((p) => !p.isPublic).length,
     }
-  }, [policies])
+  }, [policies, totalPolicies, usesServerPagination])
 
   const filteredPolicies = useMemo(() => {
+    if (usesServerPagination) {
+      return policies
+    }
+
     const normalizedSearch = searchQuery.trim().toLowerCase()
 
     const filtered = policies.filter((policy) => {
@@ -295,17 +338,30 @@ export default function AdminPoliciesPage() {
         ? valueA.localeCompare(valueB)
         : valueB.localeCompare(valueA)
     })
-  }, [policies, searchQuery, filterStatus, visibilityFilter, sortField, sortOrder])
+  }, [
+    filterStatus,
+    policies,
+    searchQuery,
+    sortField,
+    sortOrder,
+    usesServerPagination,
+    visibilityFilter,
+  ])
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredPolicies.length / itemsPerPage)
+    Math.ceil(
+      (usesServerPagination ? totalPolicies : filteredPolicies.length) /
+        itemsPerPage
+    )
   )
 
-  const paginatedPolicies = filteredPolicies.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const paginatedPolicies = usesServerPagination
+    ? filteredPolicies
+    : filteredPolicies.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

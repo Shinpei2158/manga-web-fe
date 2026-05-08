@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2 } from "lucide-react";
+import { resolveEmojiSrc } from "@/lib/emoji-url";
 
 export default function EditEmojiPackDialog({ open, onOpenChange, emojiPack, onSuccess }: any) {
     const [pack, setPack] = useState(emojiPack);
@@ -95,9 +96,7 @@ export default function EditEmojiPackDialog({ open, onOpenChange, emojiPack, onS
                                     {emoji.skins?.map((skin: any, idx: number) => (
                                         <img
                                             key={idx}
-                                            src={skin.src.startsWith("http")
-                                                ? skin.src
-                                                : `${process.env.NEXT_PUBLIC_API_URL}${skin.src}`}
+                                            src={resolveEmojiSrc(skin.src)}
                                             className="w-12 h-12 rounded object-cover border"
                                         />
                                     ))}
