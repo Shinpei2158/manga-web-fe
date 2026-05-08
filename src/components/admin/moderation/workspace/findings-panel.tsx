@@ -387,6 +387,19 @@ function toneLabelOf(tone: ProcessedFinding["moderatorGuidance"]["tone"]) {
   }
 }
 
+function matchLabelOf(strategy: ProcessedFinding["matchStrategy"]) {
+  switch (strategy) {
+    case "span":
+      return "Exact span";
+    case "excerpt":
+      return "Evidence match";
+    case "fragment":
+      return "Fragment match";
+    default:
+      return "Manual review";
+  }
+}
+
 function verdictMetaOf(verdict: ProcessedFinding["verdict"]) {
   switch (verdict) {
     case "block":
