@@ -26,6 +26,9 @@ interface CommentFiltersProps {
   onReset: () => void;
   mangas: Array<{ id: string; title: string }>;
   chapters: Array<{ id: string; title: string }>;
+  mangaOptionsLoading?: boolean;
+  mangaSearch: string;
+  onMangaSearchChange: (value: string) => void;
 }
 
 const SENTINEL = {
@@ -40,10 +43,13 @@ export function CommentFilters({
   onReset,
   mangas,
   chapters,
+  mangaOptionsLoading = false,
+  mangaSearch,
+  onMangaSearchChange,
 }: CommentFiltersProps) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
         <div className="xl:col-span-2">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
@@ -61,6 +67,16 @@ export function CommentFilters({
           </div>
         </div>
 
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Find manga..."
+            value={mangaSearch}
+            onChange={(event) => onMangaSearchChange(event.target.value)}
+            className="pl-10"
+          />
+        </div>
+
         <Select
           value={filters.manga || SENTINEL.MANGA}
           onValueChange={(value) => {
@@ -73,6 +89,11 @@ export function CommentFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={SENTINEL.MANGA}>All Manga</SelectItem>
+            {mangaOptionsLoading ? (
+              <SelectItem value="__LOADING_MANGA__" disabled>
+                Loading...
+              </SelectItem>
+            ) : null}
             {mangas.map((manga) => (
               <SelectItem key={manga.id} value={manga.id}>
                 {manga.title}

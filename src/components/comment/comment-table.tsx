@@ -170,7 +170,16 @@ export function CommentTable({
     <div className="space-y-4">
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="min-w-[1360px] table-fixed">
+            <colgroup>
+              <col className="w-[132px]" />
+              <col className="w-[250px]" />
+              <col className="w-[220px]" />
+              <col className="w-[220px]" />
+              <col className="w-[260px]" />
+              <col className="w-[170px]" />
+              <col className="w-[184px]" />
+            </colgroup>
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="w-[132px] min-w-[132px]">
@@ -219,7 +228,7 @@ export function CommentTable({
                     onSort={onSort}
                   />
                 </TableHead>
-                <TableHead className="w-[184px] text-center">Actions</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
 

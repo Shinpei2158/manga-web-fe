@@ -32,6 +32,9 @@ export function AdminCommentsView({
         onReset={c.handleResetFilters}
         mangas={c.mangas}
         chapters={c.chapters}
+        mangaOptionsLoading={c.mangaOptionsLoading}
+        mangaSearch={c.mangaSearch}
+        onMangaSearchChange={c.setMangaSearch}
       />
       <CommentTable
         comments={c.paginatedComments}

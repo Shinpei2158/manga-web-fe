@@ -80,57 +80,69 @@ export function QueueTable({
 
   return (
     <div className="overflow-hidden rounded-xl border bg-background">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/60">
-            <TableHead>
-              <SortButton
-                column="title"
-                label="Chapter"
-                sorting={sorting}
-                onSortingChange={onSortingChange}
-              />
-            </TableHead>
-            <TableHead>
-              <SortButton
-                column="mangaTitle"
-                label="Manga"
-                sorting={sorting}
-                onSortingChange={onSortingChange}
-              />
-            </TableHead>
-            <TableHead>
-              <SortButton
-                column="author"
-                label="Author"
-                sorting={sorting}
-                onSortingChange={onSortingChange}
-              />
-            </TableHead>
-            <TableHead>
-              <SortButton
-                column="risk_score"
-                label="Risk Score"
-                sorting={sorting}
-                onSortingChange={onSortingChange}
-              />
-            </TableHead>
-            <TableHead>AI Status</TableHead>
-            <TableHead>Resolution</TableHead>
-            <TableHead>Labels</TableHead>
-            <TableHead>
-              <SortButton
-                column="updatedAt"
-                label="Updated"
-                sorting={sorting}
-                onSortingChange={onSortingChange}
-              />
-            </TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+      <div className="overflow-x-auto">
+        <Table className="min-w-[1500px] table-fixed">
+          <colgroup>
+            <col className="w-[22%]" />
+            <col className="w-[22%]" />
+            <col className="w-[18%]" />
+            <col className="w-[180px]" />
+            <col className="w-[130px]" />
+            <col className="w-[150px]" />
+            <col className="w-[220px]" />
+            <col className="w-[180px]" />
+            <col className="w-[110px]" />
+          </colgroup>
+          <TableHeader>
+            <TableRow className="bg-muted/60">
+              <TableHead>
+                <SortButton
+                  column="title"
+                  label="Chapter"
+                  sorting={sorting}
+                  onSortingChange={onSortingChange}
+                />
+              </TableHead>
+              <TableHead>
+                <SortButton
+                  column="mangaTitle"
+                  label="Manga"
+                  sorting={sorting}
+                  onSortingChange={onSortingChange}
+                />
+              </TableHead>
+              <TableHead>
+                <SortButton
+                  column="author"
+                  label="Author"
+                  sorting={sorting}
+                  onSortingChange={onSortingChange}
+                />
+              </TableHead>
+              <TableHead className="text-center">
+                <SortButton
+                  column="risk_score"
+                  label="Risk Score"
+                  sorting={sorting}
+                  onSortingChange={onSortingChange}
+                />
+              </TableHead>
+              <TableHead className="text-center">AI Status</TableHead>
+              <TableHead className="text-center">Resolution</TableHead>
+              <TableHead>Labels</TableHead>
+              <TableHead>
+                <SortButton
+                  column="updatedAt"
+                  label="Updated"
+                  sorting={sorting}
+                  onSortingChange={onSortingChange}
+                />
+              </TableHead>
+              <TableHead className="text-center">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
+          <TableBody>
           {loading &&
             Array.from({ length: 5 }).map((_, index) => (
               <TableRow key={`loading-${index}`}>
@@ -173,45 +185,47 @@ export function QueueTable({
                   router.push(`/admin/moderation/workspace?chapterId=${item.chapterId}`)
                 }
               >
-                <TableCell className="font-medium">
-                  <div className="space-y-1">
-                    <p className="line-clamp-1">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      ID: {item.chapterId}
-                    </p>
+                <TableCell className="align-top font-medium">
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 break-words">{item.title}</p>
                   </div>
                 </TableCell>
 
-                <TableCell>{item.mangaTitle}</TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    <p>{item.author}</p>
+                <TableCell className="align-top">
+                  <p className="line-clamp-2 min-w-0 break-words">
+                    {item.mangaTitle}
+                  </p>
+                </TableCell>
+
+                <TableCell className="align-top">
+                  <div className="min-w-0 space-y-1">
+                    <p className="line-clamp-1 break-words">{item.author}</p>
                     {item.authorEmail && (
-                      <p className="text-xs text-muted-foreground line-clamp-1">
+                      <p className="line-clamp-1 break-all text-xs text-muted-foreground">
                         {item.authorEmail}
                       </p>
                     )}
                   </div>
                 </TableCell>
 
-                <TableCell className="min-w-[180px]">
+                <TableCell className="align-top">
                   <RiskMeter score={item.risk_score} />
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="text-center align-top">
                   <StatusBadge status={item.ai_status ?? "AI_PENDING"} />
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="text-center align-top">
                   <ResolutionBadge status={item.resolution_status ?? "OPEN"} />
                 </TableCell>
 
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
+                <TableCell className="align-top">
+                  <div className="flex min-w-0 flex-wrap gap-1">
                     {item.labels.slice(0, 2).map((label) => (
                       <span
                         key={`${item.chapterId}-${label}`}
-                        className="rounded-full bg-muted px-2 py-1 text-xs"
+                        className="max-w-full break-all rounded-full bg-muted px-2 py-1 text-xs leading-5"
                       >
                         {label}
                       </span>
@@ -227,15 +241,15 @@ export function QueueTable({
                   </div>
                 </TableCell>
 
-                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                <TableCell className="whitespace-nowrap align-top text-sm text-muted-foreground">
                   {new Date(item.updatedAt).toLocaleString()}
                 </TableCell>
 
                 <TableCell
-                  className="text-right"
+                  className="text-center align-top"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="flex items-center justify-end gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     <Link href={`/admin/moderation/workspace?chapterId=${item.chapterId}`}>
                       <Button size="sm" variant="ghost" title="Open workspace">
                         <Eye className="h-4 w-4" />
@@ -264,8 +278,9 @@ export function QueueTable({
               </TableCell>
             </TableRow>
           )}
-        </TableBody>
-      </Table>
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

@@ -28,6 +28,8 @@ export function useAdminCommentsController() {
   const [me, setMe] = useState<CommentMe | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [mangas, setMangas] = useState<CommentOption[]>([]);
+  const [mangaSearch, setMangaSearch] = useState("");
+  const [mangaOptionsLoading, setMangaOptionsLoading] = useState(false);
   const [chapters, setChapters] = useState<CommentOption[]>([]);
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -67,17 +69,26 @@ export function useAdminCommentsController() {
     (async () => {
       if (!apiUrl) return;
       try {
-        const mangaResponse = await axios.get(`${apiUrl}/api/manga`, {
+        setMangaOptionsLoading(true);
+        const mangaResponse = await axios.get(`${apiUrl}/api/manga/options`, {
           withCredentials: true,
           signal: controller.signal,
+          params: {
+            limit: 20,
+            q: mangaSearch.trim() || undefined,
+          },
         });
         setMangas((mangaResponse.data || []).map(mapMangaOption));
       } catch (error) {
-        console.error("[Admin Comments] Load mangas error:", error);
+        if (!axios.isCancel(error)) {
+          console.error("[Admin Comments] Load mangas error:", error);
+        }
+      } finally {
+        setMangaOptionsLoading(false);
       }
     })();
     return () => controller.abort();
-  }, [apiUrl]);
+  }, [apiUrl, mangaSearch]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -305,6 +316,8 @@ export function useAdminCommentsController() {
     handleViewDetails,
     hiddenCount,
     loading,
+    mangaOptionsLoading,
+    mangaSearch,
     mangas,
     me,
     newest24hCount,
@@ -316,6 +329,7 @@ export function useAdminCommentsController() {
     selectedComment,
     selectedCommentIndex,
     setCurrentPage,
+    setMangaSearch,
     setOnlyNewest24h,
     setSelectedComment,
     sortColumn,
