@@ -5,26 +5,6 @@ import type {
   SendNotificationTemplate,
 } from "./types";
 
-export function buildUsersMap(users: any[]) {
-  const map: Record<string, string> = {};
-
-  for (const user of users || []) {
-    if (user?._id && user?.email) map[user._id] = user.email;
-  }
-
-  return map;
-}
-
-export function buildEmailToIdMap(usersMap: Record<string, string>) {
-  const reversed: Record<string, string> = {};
-
-  for (const [id, email] of Object.entries(usersMap)) {
-    reversed[email.toLowerCase()] = id;
-  }
-
-  return reversed;
-}
-
 export function processNotifications(
   notifications: NotificationVM[],
   filters: AdminNotificationFilters,

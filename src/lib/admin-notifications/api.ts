@@ -4,7 +4,6 @@ import type {
   NotificationVM,
 } from "@/types/notification";
 import { mapToVM } from "@/types/notification";
-import { buildUsersMap } from "./utils";
 
 async function safeJson(resp: Response) {
   try {
@@ -34,11 +33,7 @@ export async function logNotificationFetchError(
 
 export async function fetchAdminNotificationOverview(apiUrl: string) {
   const statsUrl = `${apiUrl}/api/admin/notifications/stats`;
-  const sentUrl = `${apiUrl}/api/admin/notifications/sent`;
-  const [statsResp, sentResp] = await Promise.all([
-    fetch(statsUrl, { credentials: "include" }),
-    fetch(sentUrl, { credentials: "include" }),
-  ]);
+  const statsResp = await fetch(statsUrl, { credentials: "include" });
 
   let overview: NotificationOverview = {
     read: 0,
@@ -52,6 +47,7 @@ export async function fetchAdminNotificationOverview(apiUrl: string) {
     overview = {
       ...overview,
       read: Number(statsData?.read ?? 0),
+      saved: Number(statsData?.saved ?? 0),
       total: Number(statsData?.total ?? 0),
       unread: Number(statsData?.unread ?? 0),
     };
@@ -63,38 +59,7 @@ export async function fetchAdminNotificationOverview(apiUrl: string) {
     );
   }
 
-  if (sentResp.ok) {
-    const sentPayload = await sentResp.json();
-    const sentData: BackendNotification[] = Array.isArray(sentPayload)
-      ? sentPayload
-      : Array.isArray(sentPayload?.items)
-        ? sentPayload.items
-        : [];
-    overview.saved = (sentData ?? []).filter((item) => item.is_save).length;
-
-    if (!statsResp.ok) {
-      overview.total = sentData.length;
-      overview.unread = sentData.filter((item) => !item.is_read).length;
-      overview.read = overview.total - overview.unread;
-    }
-  } else {
-    await logNotificationFetchError(
-      "[Admin Noti Overview Saved]",
-      sentUrl,
-      sentResp,
-    );
-  }
-
   return overview;
-}
-
-export async function fetchAdminUsersMap(apiUrl: string) {
-  const resp = await fetch(`${apiUrl}/api/user/all`, {
-    credentials: "include",
-  });
-
-  if (!resp.ok) return {};
-  return buildUsersMap(await resp.json());
 }
 
 export async function fetchAdminNotifications({
@@ -166,18 +131,21 @@ export async function fetchAdminNotifications({
 export async function sendAdminNotification({
   apiUrl,
   body,
+  receiverEmail,
   receiverId,
   title,
 }: {
   apiUrl: string;
   body: string;
-  receiverId: string;
+  receiverEmail?: string;
+  receiverId?: string;
   title: string;
 }) {
   const resp = await fetch(`${apiUrl}/api/admin/notifications/send`, {
     body: JSON.stringify({
       body: body.trim(),
-      receiver_id: receiverId,
+      receiver_email: receiverEmail?.trim() || undefined,
+      receiver_id: receiverId?.trim() || undefined,
       title: title.trim(),
     }),
     credentials: "include",

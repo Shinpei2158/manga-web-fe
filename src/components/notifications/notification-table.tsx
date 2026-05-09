@@ -57,7 +57,7 @@ function formatDateParts(date: string) {
 }
 
 function shortId(id: string) {
-  return id?.length > 10 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
+  return id?.length > 10 ? `${id.slice(0, 6)}...${id.slice(-4)}` : id;
 }
 
 export function NotificationTable({
@@ -471,7 +471,7 @@ export function NotificationTable({
                     Date
                   </p>
                   <p className="mt-1">
-                    {dateParts.date} · {dateParts.time}
+                    {dateParts.date} / {dateParts.time}
                   </p>
                 </div>
                 <div>

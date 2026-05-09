@@ -3,14 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import {
-  fetchAdminUsersMap,
-  sendAdminNotification,
-} from "@/lib/admin-notifications/api";
-import {
-  buildEmailToIdMap,
-  buildGeneralNotificationTemplate,
-} from "@/lib/admin-notifications/utils";
+import { sendAdminNotification } from "@/lib/admin-notifications/api";
+import { buildGeneralNotificationTemplate } from "@/lib/admin-notifications/utils";
 
 const API = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -18,21 +12,11 @@ export function useSendGeneralNotificationController() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const template = useMemo(() => buildGeneralNotificationTemplate(), []);
-  const [usersMap, setUsersMap] = useState<Record<string, string>>({});
   const [receiverId, setReceiverId] = useState("");
   const [receiverEmail, setReceiverEmail] = useState("");
   const [title, setTitle] = useState(template.title);
   const [body, setBody] = useState(template.body);
   const [sending, setSending] = useState(false);
-  const emailToIdMap = useMemo(() => buildEmailToIdMap(usersMap), [usersMap]);
-
-  useEffect(() => {
-    fetchAdminUsersMap(API)
-      .then(setUsersMap)
-      .catch((error) =>
-        console.error("[Send General Noti] fetch users failed:", error),
-      );
-  }, []);
 
   useEffect(() => {
     const qpReceiverId = searchParams.get("receiverId")?.trim() ?? "";
@@ -45,12 +29,6 @@ export function useSendGeneralNotificationController() {
     setTitle(qpTitle || template.title);
     setBody(qpBody || template.body);
   }, [searchParams, template.title, template.body]);
-
-  useEffect(() => {
-    if (!receiverEmail && receiverId && usersMap[receiverId]) {
-      setReceiverEmail(usersMap[receiverId]);
-    }
-  }, [receiverId, receiverEmail, usersMap]);
 
   const copyText = async (value: string, label: string) => {
     try {
@@ -68,10 +46,8 @@ export function useSendGeneralNotificationController() {
 
   const handleSend = async () => {
     const normalizedEmail = receiverEmail.trim().toLowerCase();
-    const resolvedReceiverId =
-      receiverId || (normalizedEmail ? emailToIdMap[normalizedEmail] : "");
 
-    if (!resolvedReceiverId) {
+    if (!receiverId && !normalizedEmail) {
       toast.error("Receiver is required.");
       return;
     }
@@ -91,7 +67,8 @@ export function useSendGeneralNotificationController() {
       await sendAdminNotification({
         apiUrl: API,
         body,
-        receiverId: resolvedReceiverId,
+        receiverEmail: normalizedEmail || undefined,
+        receiverId: receiverId || undefined,
         title,
       });
 

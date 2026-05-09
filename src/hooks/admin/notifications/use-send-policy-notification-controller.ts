@@ -4,14 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { fetchModerationRecord } from "@/lib/moderation";
-import {
-  fetchAdminUsersMap,
-  sendAdminNotification,
-} from "@/lib/admin-notifications/api";
-import {
-  buildEmailToIdMap,
-  buildPolicyNotificationTemplate,
-} from "@/lib/admin-notifications/utils";
+import { sendAdminNotification } from "@/lib/admin-notifications/api";
+import { buildPolicyNotificationTemplate } from "@/lib/admin-notifications/utils";
 import type { PolicyNotificationRecord } from "@/lib/admin-notifications/types";
 
 const API = process.env.NEXT_PUBLIC_API_URL!;
@@ -23,23 +17,13 @@ export function useSendPolicyNotificationController() {
   const [record, setRecord] = useState<PolicyNotificationRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
-  const [usersMap, setUsersMap] = useState<Record<string, string>>({});
   const [receiverEmail, setReceiverEmail] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const emailToIdMap = useMemo(() => buildEmailToIdMap(usersMap), [usersMap]);
   const generated = useMemo(
     () => (record ? buildPolicyNotificationTemplate(record) : { body: "", title: "" }),
     [record],
   );
-
-  useEffect(() => {
-    fetchAdminUsersMap(API)
-      .then(setUsersMap)
-      .catch((error) =>
-        console.error("[Send Policy Noti] fetch users failed:", error),
-      );
-  }, []);
 
   useEffect(() => {
     if (!chapterId) return;
@@ -85,12 +69,6 @@ export function useSendPolicyNotificationController() {
       return;
     }
 
-    const receiverId = emailToIdMap[normalizedEmail];
-    if (!receiverId) {
-      toast.error("Receiver email not found in users list.");
-      return;
-    }
-
     if (!title.trim()) {
       toast.error("Notification title is required.");
       return;
@@ -103,7 +81,12 @@ export function useSendPolicyNotificationController() {
 
     try {
       setSending(true);
-      await sendAdminNotification({ apiUrl: API, body, receiverId, title });
+      await sendAdminNotification({
+        apiUrl: API,
+        body,
+        receiverEmail: normalizedEmail,
+        title,
+      });
       toast.success("Policy notification sent successfully.");
       router.push("/admin/notifications");
     } catch (error) {

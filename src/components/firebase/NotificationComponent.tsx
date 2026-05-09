@@ -64,12 +64,20 @@ export default function NotificationComponent({
       setLoading(true);
       setError(null);
 
-      const res = await axios.get<Notification[]>(
+      const res = await axios.get<Notification[] | { items?: Notification[] }>(
         `${process.env.NEXT_PUBLIC_API_URL}/api/notification/me`,
-        { withCredentials: true }
+        {
+          params: { limit: 20, page: 1, status: "Unread" },
+          withCredentials: true,
+        }
       );
 
-      const unread = res.data
+      const rows = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.items)
+          ? res.data.items
+          : [];
+      const unread = rows
         .filter((n) => !n.is_read)
         .sort(
           (a, b) =>

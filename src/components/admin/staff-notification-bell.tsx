@@ -16,9 +16,8 @@ type StaffUser = {
   role?: string;
 };
 
-type NotificationSummary = {
-  _id: string;
-  is_read: boolean;
+type NotificationStats = {
+  unread?: number;
 };
 
 export function StaffNotificationBell() {
@@ -53,13 +52,12 @@ export function StaffNotificationBell() {
     const fetchUnread = async () => {
       try {
         setLoading(true);
-        const response = await axios.get<NotificationSummary[]>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/notification/me`,
+        const response = await axios.get<NotificationStats>(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/notification/me/stats`,
           { withCredentials: true },
         );
 
-        const unread = (response.data ?? []).filter((item) => !item.is_read).length;
-        setUnreadCount(unread);
+        setUnreadCount(Number(response.data?.unread ?? 0));
       } catch {
         setUnreadCount(0);
       } finally {

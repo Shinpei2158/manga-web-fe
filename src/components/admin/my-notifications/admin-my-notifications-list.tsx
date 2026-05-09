@@ -1,6 +1,15 @@
 "use client";
 
-import { Bell, Bookmark, BookmarkPlus, Check, Loader2, Trash2 } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  BookmarkPlus,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AdminMyNotificationsController } from "@/hooks/admin/my-notifications/use-admin-my-notifications-controller";
@@ -35,11 +44,40 @@ export function AdminMyNotificationsList({
 
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 px-6 py-4">
+      <div className="flex flex-col gap-3 border-b border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm font-medium text-slate-600">
-          Showing {c.filteredNotifications.length} notification
-          {c.filteredNotifications.length === 1 ? "" : "s"}
+          Showing {c.totalItems === 0 ? 0 : (c.currentPage - 1) * 10 + 1}-
+          {Math.min(c.currentPage * 10, c.totalItems)} of {c.totalItems} notification
+          {c.totalItems === 1 ? "" : "s"}
         </p>
+
+        {c.totalItems > 0 ? (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="h-9 rounded-xl border-slate-200"
+              disabled={c.currentPage <= 1 || c.loading}
+              onClick={() => c.setCurrentPage(Math.max(1, c.currentPage - 1))}
+            >
+              <ChevronLeft className="mr-1 h-4 w-4" />
+              Prev
+            </Button>
+            <div className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-600">
+              Page {c.currentPage} / {c.totalPages}
+            </div>
+            <Button
+              variant="outline"
+              className="h-9 rounded-xl border-slate-200"
+              disabled={c.currentPage >= c.totalPages || c.loading}
+              onClick={() =>
+                c.setCurrentPage(Math.min(c.totalPages, c.currentPage + 1))
+              }
+            >
+              Next
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       {c.filteredNotifications.length === 0 ? (
