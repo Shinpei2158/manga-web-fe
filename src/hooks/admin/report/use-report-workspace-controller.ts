@@ -7,8 +7,9 @@ import {
   fetchReportStaffRole,
   fetchReportWorkspaceItems,
 } from "@/lib/admin-report/api";
-import { INITIAL_VIEW_STATE } from "@/lib/admin-report/constants";
+import { GROUPS_PER_PAGE, INITIAL_VIEW_STATE } from "@/lib/admin-report/constants";
 import type {
+  ReportWorkspacePage,
   StaffRole,
   WorkspaceTab,
   WorkspaceViewState,
@@ -27,6 +28,12 @@ export function useReportWorkspaceController() {
   const [role, setRole] = useState<StaffRole>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
   const [reports, setReports] = useState<WorkspaceReport[]>([]);
+  const [reportPage, setReportPage] = useState<ReportWorkspacePage>({
+    limit: GROUPS_PER_PAGE,
+    page: 1,
+    total: 0,
+    totalPages: 1,
+  });
   const [loadingReports, setLoadingReports] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [busyKey, setBusyKey] = useState<string | null>(null);
@@ -55,17 +62,38 @@ export function useReportWorkspaceController() {
     setRoleError(response.error);
   }, [apiUrl]);
 
+  const activePage = views[activeTab].currentPage;
+  const activeSearchTerm = views[activeTab].searchTerm;
+  const activeStatusFilter = views[activeTab].statusFilter;
+
   const fetchReports = useCallback(async () => {
-    const activeSearch = views[activeTab].searchTerm.trim();
     setLoadingReports(true);
     setListError(null);
 
-    const response = await fetchReportWorkspaceItems(apiUrl, activeSearch);
+    const response = await fetchReportWorkspaceItems(apiUrl, {
+      limit: GROUPS_PER_PAGE,
+      page: activePage,
+      searchTerm: activeSearchTerm,
+      statusFilter: activeStatusFilter,
+      tab: activeTab,
+    });
 
     setReports(response.items);
+    setReportPage({
+      limit: response.limit,
+      page: response.page,
+      total: response.total,
+      totalPages: response.totalPages,
+    });
     setListError(response.error);
     setLoadingReports(false);
-  }, [activeTab, apiUrl, views]);
+  }, [
+    activeTab,
+    activePage,
+    activeSearchTerm,
+    activeStatusFilter,
+    apiUrl,
+  ]);
 
   useEffect(() => {
     void fetchRole();
@@ -88,6 +116,7 @@ export function useReportWorkspaceController() {
     activeTab,
     patchView,
     reports,
+    reportPage,
     views,
   });
 
@@ -106,8 +135,6 @@ export function useReportWorkspaceController() {
 
   const actions = useReportWorkspaceActions({
     apiUrl,
-    filteredCommunityGroups: groups.filteredCommunityGroups,
-    filteredContentGroups: groups.filteredContentGroups,
     patchView,
     reports,
     setBusyKey,

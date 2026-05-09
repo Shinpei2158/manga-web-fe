@@ -24,14 +24,14 @@ function ReportAgainstCell({
   name: string;
 }) {
   return (
-    <TableCell>
+    <TableCell className="min-w-0">
       <div className="flex items-start gap-3">
         <Avatar className="h-11 w-11 border border-slate-200">
           <AvatarImage src={avatar} alt={name} referrerPolicy="no-referrer" />
           <AvatarFallback>{getInitial(name)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <div className="font-semibold text-slate-900">{name}</div>
+          <div className="truncate font-semibold text-slate-900">{name}</div>
           <div className="truncate text-xs text-slate-500">
             {email || "No email"}
           </div>
@@ -107,8 +107,8 @@ export function ContentReportGroupRow({
         email={group.meta.email}
         name={group.meta.name}
       />
-      <TableCell>
-        <Badge variant="secondary" className={`border ${statusMeta.className}`}>
+    <TableCell className="text-center">
+      <Badge variant="secondary" className={`border ${statusMeta.className}`}>
           {statusMeta.label}
         </Badge>
       </TableCell>
@@ -120,7 +120,7 @@ export function ContentReportGroupRow({
           </div>
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="text-center">
         <div className="space-y-1">
           <div className="font-semibold text-slate-900">
             {group.doneCount}/{group.totalCount}
@@ -129,7 +129,7 @@ export function ContentReportGroupRow({
         </div>
       </TableCell>
       <TableCell>
-        <div className="text-sm text-slate-700">
+        <div className="whitespace-nowrap text-sm text-slate-700">
           {formatReportDateTime(group.latestActivityAt)}
         </div>
       </TableCell>
@@ -167,8 +167,8 @@ export function CommunityReportGroupRow({
         email={group.meta.email}
         name={group.meta.name}
       />
-      <TableCell>
-        <Badge variant="secondary" className={`border ${statusMeta.className}`}>
+      <TableCell className="text-center">
+      <Badge variant="secondary" className={`border ${statusMeta.className}`}>
           {statusMeta.label}
         </Badge>
       </TableCell>
@@ -180,7 +180,7 @@ export function CommunityReportGroupRow({
           </div>
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="text-center">
         <div className="space-y-1">
           <div className="font-semibold text-slate-900">
             {group.doneCount}/{group.totalCount}
@@ -189,7 +189,7 @@ export function CommunityReportGroupRow({
         </div>
       </TableCell>
       <TableCell>
-        <div className="text-sm text-slate-700">
+        <div className="whitespace-nowrap text-sm text-slate-700">
           {formatReportDateTime(group.latestActivityAt)}
         </div>
       </TableCell>

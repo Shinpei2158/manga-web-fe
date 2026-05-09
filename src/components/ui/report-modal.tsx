@@ -28,7 +28,6 @@ import {
   formatReportDateTime,
   formatReasonLabel,
   getInitial,
-  getPageNumbers,
   MergedReportItem,
   ReportAgainstGroup,
   ReportResolutionAction,
@@ -133,12 +132,10 @@ export default function ReportModal({
   const API = process.env.NEXT_PUBLIC_API_URL;
   const [selectedMangaId, setSelectedMangaId] = useState("");
   const [selectedTargetKey, setSelectedTargetKey] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [highlightedItemKey, setHighlightedItemKey] = useState<string | null>(
     null
   );
-  const itemsPerPage = 10;
 
   useEffect(() => {
     if (!group) {
@@ -166,7 +163,6 @@ export default function ReportModal({
     if (!group) {
       setSelectedMangaId("");
       setSelectedTargetKey("");
-      setCurrentPage(1);
       setHighlightedItemKey(null);
       return;
     }
@@ -183,19 +179,6 @@ export default function ReportModal({
     setSelectedMangaId(nextMangaId);
     setSelectedTargetKey(nextTargetKey);
     setHighlightedItemKey(focusLocation?.itemKey || null);
-
-    const focusedTarget = nextManga?.targetBuckets.find(
-      (target) => target.key === nextTargetKey
-    );
-    const focusedIndex = focusLocation?.itemKey
-      ? focusedTarget?.mergedItems.findIndex(
-        (item) => item.key === focusLocation.itemKey
-      ) ?? -1
-      : -1;
-
-    setCurrentPage(
-      focusedIndex >= 0 ? Math.floor(focusedIndex / itemsPerPage) + 1 : 1
-    );
   }, [group, focusReportId]);
 
   const selectedManga = useMemo(() => {
@@ -213,7 +196,6 @@ export default function ReportModal({
 
     if (!selectedManga.targetBuckets.some((target) => target.key === selectedTargetKey)) {
       setSelectedTargetKey(selectedManga.targetBuckets[0]?.key || "");
-      setCurrentPage(1);
     }
   }, [selectedManga, selectedTargetKey]);
 
@@ -227,17 +209,7 @@ export default function ReportModal({
     );
   }, [selectedManga, selectedTargetKey]);
 
-  const paginatedItems = useMemo(() => {
-    if (!selectedTarget) return [];
-
-    const start = (currentPage - 1) * itemsPerPage;
-    return selectedTarget.mergedItems.slice(start, start + itemsPerPage);
-  }, [currentPage, selectedTarget]);
-
-  const totalPages = selectedTarget
-    ? Math.max(1, Math.ceil(selectedTarget.mergedItems.length / itemsPerPage))
-    : 1;
-  const pageNumbers = getPageNumbers(totalPages, currentPage);
+  const visibleItems = selectedTarget?.mergedItems || [];
 
   if (!group) return null;
 
@@ -342,7 +314,6 @@ export default function ReportModal({
                   className="h-auto max-w-full rounded-full px-4 py-2 text-left"
                   onClick={() => {
                     setSelectedMangaId(manga.mangaId);
-                    setCurrentPage(1);
                     setHighlightedItemKey(null);
                   }}
                 >
@@ -373,7 +344,6 @@ export default function ReportModal({
                     className="h-auto max-w-full rounded-full px-4 py-2 text-left"
                     onClick={() => {
                       setSelectedTargetKey(target.key);
-                      setCurrentPage(1);
                       setHighlightedItemKey(null);
                     }}
                   >
@@ -431,9 +401,9 @@ export default function ReportModal({
                 </div>
               </div>
 
-              {paginatedItems.length ? (
+              {visibleItems.length ? (
                 <div className="space-y-4">
-                  {paginatedItems.map((item) => {
+                  {visibleItems.map((item) => {
                     const reasonMeta = getReasonMeta(item.reason);
                     const ReasonIcon = reasonMeta.icon;
                     const itemBusy = busyKey === `item:${item.key}`;
@@ -642,46 +612,6 @@ export default function ReportModal({
                   No grouped cases for the current target.
                 </div>
               )}
-
-              {selectedTarget.mergedItems.length > 0 ? (
-                <div className="flex flex-wrap items-center justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-xl border-slate-200"
-                    disabled={currentPage <= 1}
-                    onClick={() =>
-                      setCurrentPage((previous) => Math.max(1, previous - 1))
-                    }
-                  >
-                    Prev
-                  </Button>
-                  {pageNumbers.map((pageNumber) => (
-                    <Button
-                      key={pageNumber}
-                      variant={pageNumber === currentPage ? "default" : "outline"}
-                      size="sm"
-                      className="rounded-xl"
-                      onClick={() => setCurrentPage(pageNumber)}
-                    >
-                      {pageNumber}
-                    </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-xl border-slate-200"
-                    disabled={currentPage >= totalPages}
-                    onClick={() =>
-                      setCurrentPage((previous) =>
-                        Math.min(totalPages, previous + 1)
-                      )
-                    }
-                  >
-                    Next
-                  </Button>
-                </div>
-              ) : null}
             </section>
           ) : null}
         </div>

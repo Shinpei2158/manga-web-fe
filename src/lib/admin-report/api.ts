@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { WorkspaceReport } from "@/lib/report-workspace";
 import type { ReportResolutionAction, ReportStatus } from "@/lib/report-workspace";
+import type { GroupStatusFilter, WorkspaceTab } from "./types";
 import {
   getReportErrorMessage,
   logReportAxiosError,
@@ -36,12 +37,22 @@ export async function fetchReportStaffRole(apiUrl?: string) {
 
 export async function fetchReportWorkspaceItems(
   apiUrl: string | undefined,
-  searchTerm: string,
+  params: {
+    limit: number;
+    page: number;
+    searchTerm: string;
+    statusFilter: GroupStatusFilter;
+    tab: WorkspaceTab;
+  },
 ) {
   if (!apiUrl) {
     return {
       error: "Missing NEXT_PUBLIC_API_URL.",
       items: [] as WorkspaceReport[],
+      limit: params.limit,
+      page: params.page,
+      total: 0,
+      totalPages: 1,
     };
   }
 
@@ -51,25 +62,43 @@ export async function fetchReportWorkspaceItems(
     const response = await axios.get(endpoint, {
       withCredentials: true,
       params: {
-        limit: 300,
-        page: 1,
-        q: searchTerm.trim() || undefined,
+        limit: params.limit,
+        page: params.page,
+        q: params.searchTerm.trim() || undefined,
+        status:
+          params.statusFilter === "all" ? undefined : params.statusFilter,
+        targetGroup: params.tab,
       },
     });
+    const payload = response.data as any;
+    const items = Array.isArray(payload)
+      ? payload
+      : Array.isArray(payload?.items)
+        ? payload.items
+        : [];
+    const limit = Number(payload?.limit ?? params.limit);
+    const total = Number(payload?.total ?? items.length);
 
     return {
       error: null,
-      items: Array.isArray(response.data)
-        ? response.data
-        : Array.isArray((response.data as any)?.items)
-          ? (response.data as any).items
-          : [],
+      items,
+      limit,
+      page: Number(payload?.page ?? params.page),
+      total,
+      totalPages: Math.max(
+        1,
+        Number(payload?.totalPages ?? Math.ceil(total / Math.max(limit, 1))),
+      ),
     };
   } catch (err: any) {
     logReportAxiosError("[Admin Reports]", endpoint, err);
     return {
       error: getReportErrorMessage(err),
       items: [] as WorkspaceReport[],
+      limit: params.limit,
+      page: params.page,
+      total: 0,
+      totalPages: 1,
     };
   }
 }

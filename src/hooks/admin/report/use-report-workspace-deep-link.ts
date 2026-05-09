@@ -9,7 +9,6 @@ import {
   type ReportAgainstGroup,
   type WorkspaceReport,
 } from "@/lib/report-workspace";
-import { GROUPS_PER_PAGE } from "@/lib/admin-report/constants";
 import type { WorkspaceTab, WorkspaceViewState } from "@/lib/admin-report/types";
 
 export function useReportWorkspaceDeepLink({
@@ -92,14 +91,8 @@ export function useReportWorkspaceDeepLink({
     deepLinkHandledRef.current = true;
     setActiveTab(targetTab);
 
-    const groupIndex = groups.findIndex(
-      (group) => group.key === location.groupKey,
-    );
-
     patchView(targetTab, {
       confirmGroupKey: null,
-      currentPage:
-        groupIndex >= 0 ? Math.floor(groupIndex / GROUPS_PER_PAGE) + 1 : 1,
       focusReportId: targetReport._id,
       isModalOpen: true,
       selectedGroupKey: location.groupKey,

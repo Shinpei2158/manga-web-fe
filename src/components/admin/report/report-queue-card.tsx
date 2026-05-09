@@ -131,24 +131,34 @@ function ReportListWarning({ controller: c }: { controller: ReportWorkspaceContr
 function ReportQueueTable({ controller: c }: { controller: ReportWorkspaceController }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200/80">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Report Against</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>
-              {c.activeTab === "content" ? "Manga with report" : "Targets with report"}
-            </TableHead>
-            <TableHead>Progress</TableHead>
-            <TableHead>Latest activity</TableHead>
-            <TableHead className="w-[220px] text-center">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+      <div className="overflow-x-auto">
+        <Table className="min-w-[1040px] table-fixed">
+          <colgroup>
+            <col className="w-[28%]" />
+            <col className="w-[130px]" />
+            <col className="w-[20%]" />
+            <col className="w-[150px]" />
+            <col className="w-[170px]" />
+            <col className="w-[220px]" />
+          </colgroup>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Report Against</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              <TableHead>
+                {c.activeTab === "content" ? "Manga with report" : "Targets with report"}
+              </TableHead>
+              <TableHead className="text-center">Progress</TableHead>
+              <TableHead className="whitespace-nowrap">Latest activity</TableHead>
+              <TableHead className="w-[220px] text-center">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
-          <ReportQueueTableBody controller={c} />
-        </TableBody>
-      </Table>
+          <TableBody>
+            <ReportQueueTableBody controller={c} />
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

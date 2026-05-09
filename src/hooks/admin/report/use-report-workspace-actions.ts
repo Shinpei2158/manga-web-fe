@@ -15,7 +15,6 @@ import {
   buildReportMutationPayload,
   moderateReport,
 } from "@/lib/admin-report/api";
-import { GROUPS_PER_PAGE } from "@/lib/admin-report/constants";
 import type {
   ApplyReportMutationParams,
   ReportGroup,
@@ -30,16 +29,12 @@ import {
 
 export function useReportWorkspaceActions({
   apiUrl,
-  filteredCommunityGroups,
-  filteredContentGroups,
   patchView,
   reports,
   setBusyKey,
   setReports,
 }: {
   apiUrl?: string;
-  filteredCommunityGroups: CommunityReportAgainstGroup[];
-  filteredContentGroups: ReportAgainstGroup[];
   patchView: (tab: WorkspaceTab, patch: Partial<WorkspaceViewState>) => void;
   reports: WorkspaceReport[];
   setBusyKey: (key: string | null) => void;
@@ -143,13 +138,7 @@ export function useReportWorkspaceActions({
     group: ReportAgainstGroup,
     reportId?: string | null,
   ) => {
-    const visibleIndex = filteredContentGroups.findIndex(
-      (candidate) => candidate.key === group.key,
-    );
-
     patchView("content", {
-      currentPage:
-        visibleIndex >= 0 ? Math.floor(visibleIndex / GROUPS_PER_PAGE) + 1 : 1,
       focusReportId: reportId || null,
       isModalOpen: true,
       selectedGroupKey: group.key,
@@ -160,13 +149,7 @@ export function useReportWorkspaceActions({
     group: CommunityReportAgainstGroup,
     reportId?: string | null,
   ) => {
-    const visibleIndex = filteredCommunityGroups.findIndex(
-      (candidate) => candidate.key === group.key,
-    );
-
     patchView("community", {
-      currentPage:
-        visibleIndex >= 0 ? Math.floor(visibleIndex / GROUPS_PER_PAGE) + 1 : 1,
       focusReportId: reportId || null,
       isModalOpen: true,
       selectedGroupKey: group.key,

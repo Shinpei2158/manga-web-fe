@@ -8,17 +8,22 @@ import {
   isContentReport,
   type WorkspaceReport,
 } from "@/lib/report-workspace";
-import { GROUPS_PER_PAGE } from "@/lib/admin-report/constants";
-import type { WorkspaceTab, WorkspaceViewState } from "@/lib/admin-report/types";
+import type {
+  ReportWorkspacePage,
+  WorkspaceTab,
+  WorkspaceViewState,
+} from "@/lib/admin-report/types";
 
 export function useReportWorkspaceGroups({
   activeTab,
   patchView,
+  reportPage,
   reports,
   views,
 }: {
   activeTab: WorkspaceTab;
   patchView: (tab: WorkspaceTab, patch: Partial<WorkspaceViewState>) => void;
+  reportPage: ReportWorkspacePage;
   reports: WorkspaceReport[];
   views: Record<WorkspaceTab, WorkspaceViewState>;
 }) {
@@ -39,53 +44,8 @@ export function useReportWorkspaceGroups({
     [communityReports],
   );
 
-  const filteredContentGroups = useMemo(() => {
-    const normalizedTerm = views.content.searchTerm.trim().toLowerCase();
-
-    return contentGroups.filter((group) => {
-      const matchesSearch =
-        !normalizedTerm ||
-        group.meta.name.toLowerCase().includes(normalizedTerm) ||
-        String(group.meta.email || "").toLowerCase().includes(normalizedTerm) ||
-        group.mangaBuckets.some((manga) =>
-          manga.mangaTitle.toLowerCase().includes(normalizedTerm),
-        );
-      const matchesStatus =
-        views.content.statusFilter === "all"
-          ? true
-          : views.content.statusFilter === "done"
-            ? group.doneCount === group.totalCount && group.totalCount > 0
-            : group.doneCount < group.totalCount;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [contentGroups, views.content.searchTerm, views.content.statusFilter]);
-
-  const filteredCommunityGroups = useMemo(() => {
-    const normalizedTerm = views.community.searchTerm.trim().toLowerCase();
-
-    return communityGroups.filter((group) => {
-      const matchesSearch =
-        !normalizedTerm ||
-        group.meta.name.toLowerCase().includes(normalizedTerm) ||
-        String(group.meta.email || "").toLowerCase().includes(normalizedTerm) ||
-        group.sections.some((section) =>
-          section.targetBuckets.some(
-            (target) =>
-              target.label.toLowerCase().includes(normalizedTerm) ||
-              target.excerpt.toLowerCase().includes(normalizedTerm),
-          ),
-        );
-      const matchesStatus =
-        views.community.statusFilter === "all"
-          ? true
-          : views.community.statusFilter === "done"
-            ? group.doneCount === group.totalCount && group.totalCount > 0
-            : group.doneCount < group.totalCount;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [communityGroups, views.community.searchTerm, views.community.statusFilter]);
+  const filteredContentGroups = contentGroups;
+  const filteredCommunityGroups = communityGroups;
 
   const contentSelectedGroup =
     views.content.selectedGroupKey
@@ -137,36 +97,34 @@ export function useReportWorkspaceGroups({
   }, [communityGroups, patchView, views.community.selectedGroupKey]);
 
   useEffect(() => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredContentGroups.length / GROUPS_PER_PAGE),
-    );
-    if (views.content.currentPage > totalPages) {
-      patchView("content", { currentPage: totalPages });
+    if (activeTab !== "content") return;
+    if (views.content.currentPage > reportPage.totalPages) {
+      patchView("content", { currentPage: reportPage.totalPages });
     }
-  }, [filteredContentGroups.length, patchView, views.content.currentPage]);
+  }, [
+    activeTab,
+    patchView,
+    reportPage.totalPages,
+    views.content.currentPage,
+  ]);
 
   useEffect(() => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredCommunityGroups.length / GROUPS_PER_PAGE),
-    );
-    if (views.community.currentPage > totalPages) {
-      patchView("community", { currentPage: totalPages });
+    if (activeTab !== "community") return;
+    if (views.community.currentPage > reportPage.totalPages) {
+      patchView("community", { currentPage: reportPage.totalPages });
     }
-  }, [filteredCommunityGroups.length, patchView, views.community.currentPage]);
+  }, [
+    activeTab,
+    patchView,
+    reportPage.totalPages,
+    views.community.currentPage,
+  ]);
 
   const currentView = views[activeTab];
   const currentGroups =
     activeTab === "content" ? filteredContentGroups : filteredCommunityGroups;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(currentGroups.length / GROUPS_PER_PAGE),
-  );
-  const currentPageGroups = currentGroups.slice(
-    (currentView.currentPage - 1) * GROUPS_PER_PAGE,
-    currentView.currentPage * GROUPS_PER_PAGE,
-  );
+  const totalPages = reportPage.totalPages;
+  const currentPageGroups = currentGroups;
   const sourceGroups = activeTab === "content" ? contentGroups : communityGroups;
   const totalMergedCases = sourceGroups.reduce(
     (total, group) => total + group.totalCount,
@@ -185,6 +143,7 @@ export function useReportWorkspaceGroups({
     contentGroups,
     contentSelectedGroup,
     currentGroups,
+    currentPageTotalItems: reportPage.total,
     currentPageGroups,
     currentStats: {
       doneMergedCases,

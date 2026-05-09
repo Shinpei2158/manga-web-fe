@@ -24,6 +24,13 @@ export type WorkspaceViewState = {
   confirmGroupKey: string | null;
 };
 
+export type ReportWorkspacePage = {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+};
+
 export type ReportGroup =
   | ReportAgainstGroup
   | CommunityReportAgainstGroup;
