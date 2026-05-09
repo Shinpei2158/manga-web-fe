@@ -127,8 +127,8 @@ export function PolicyListView({
 
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm text-gray-500">
-                {c.filteredPolicies.length} result
-                {c.filteredPolicies.length !== 1 ? "s" : ""}
+                {c.totalPolicies} result
+                {c.totalPolicies !== 1 ? "s" : ""}
               </p>
 
               <Button variant="outline" onClick={c.clearFilters}>

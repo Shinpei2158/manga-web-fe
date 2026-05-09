@@ -12,7 +12,7 @@ import type {
   MangaGrowthPoint,
   MangaSummary,
   NotiStats,
-  PolicyRecord,
+  PolicyDashboardSummary,
   RecentAuditItem,
   RecentUserRow,
   UserSummary,
@@ -22,7 +22,6 @@ import {
   formatMonthTick,
   formatReadableDate,
   mapRecentAuditRows,
-  summarizePolicies,
 } from "@/lib/admin-dashboard/utils";
 
 export function useAdminDashboardData(): DashboardViewModel {
@@ -31,7 +30,12 @@ export function useAdminDashboardData(): DashboardViewModel {
   const [summary, setSummary] = useState<UserSummary | null>(null);
   const [weeklyNew, setWeeklyNew] = useState<UsersWeeklyPoint[]>([]);
   const [recentUsers, setRecentUsers] = useState<RecentUserRow[]>([]);
-  const [policies, setPolicies] = useState<PolicyRecord[]>([]);
+  const [policySummary, setPolicySummary] = useState<PolicyDashboardSummary>({
+    active: 0,
+    archived: 0,
+    draft: 0,
+    total: 0,
+  });
   const [auditSummary, setAuditSummary] =
     useState<AuditDashboardSummary>(emptyAuditSummary);
   const [recentAuditLogs, setRecentAuditLogs] = useState<RecentAuditItem[]>([]);
@@ -130,13 +134,16 @@ export function useAdminDashboardData(): DashboardViewModel {
       "policies",
       () =>
         axios
-          .get<PolicyRecord[]>(`${apiUrl}/api/policies`, {
+          .get<PolicyDashboardSummary>(`${apiUrl}/api/policies/summary`, {
             withCredentials: true,
           })
-          .then((response) =>
-            Array.isArray(response.data) ? response.data : [],
-          ),
-      setPolicies,
+          .then((response) => ({
+            active: Number(response.data?.active ?? 0),
+            archived: Number(response.data?.archived ?? 0),
+            draft: Number(response.data?.draft ?? 0),
+            total: Number(response.data?.total ?? 0),
+          })),
+      setPolicySummary,
     );
 
     load(
@@ -200,7 +207,6 @@ export function useAdminDashboardData(): DashboardViewModel {
     };
   }, [apiUrl]);
 
-  const policySummary = useMemo(() => summarizePolicies(policies), [policies]);
   const weeklyNewChartData = useMemo(
     () =>
       weeklyNew.map((point) => ({

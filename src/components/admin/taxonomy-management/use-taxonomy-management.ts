@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import type {
@@ -12,7 +12,6 @@ import type {
 } from "./types";
 import {
   DEFAULT_TAXONOMY_LIMIT,
-  filterAndSortTaxonomyItems,
   isValidTaxonomyForm,
   normalizeTaxonomyItems,
 } from "./utils";
@@ -25,7 +24,6 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
 
   const [items, setItems] = useState<TaxonomyItem[]>([]);
   const [serverTotal, setServerTotal] = useState(0);
-  const [usesServerPagination, setUsesServerPagination] = useState(false);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | TaxonomyStatus>("all");
   const [sort, setSort] = useState<TaxonomySortKey>("updatedAt.desc");
@@ -68,12 +66,10 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
       });
 
       if (Array.isArray(response.data)) {
-        setUsesServerPagination(false);
         setItems(normalizeTaxonomyItems(response.data));
         setServerTotal(response.data.length);
       } else {
         const normalized = normalizeTaxonomyItems(response.data);
-        setUsesServerPagination(true);
         setItems(normalized);
         setServerTotal(Number((response.data as any)?.total ?? normalized.length));
       }
@@ -97,26 +93,9 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
     setPage(1);
   }, [search, filterStatus, sort, limit]);
 
-  const filteredItems = useMemo(
-    () =>
-      usesServerPagination
-        ? items
-        : filterAndSortTaxonomyItems({
-            items,
-            search,
-            status: filterStatus,
-            sort,
-          }),
-    [filterStatus, items, search, sort, usesServerPagination],
-  );
-
-  const total = usesServerPagination ? serverTotal : filteredItems.length;
+  const total = serverTotal;
   const pageCount = Math.max(1, Math.ceil(total / limit));
-  const visibleItems = useMemo(() => {
-    if (usesServerPagination) return filteredItems;
-    const start = (page - 1) * limit;
-    return filteredItems.slice(start, start + limit);
-  }, [filteredItems, limit, page, usesServerPagination]);
+  const visibleItems = items;
 
   const handleAddItem = async () => {
     if (!endpoint || !canAdd) return;

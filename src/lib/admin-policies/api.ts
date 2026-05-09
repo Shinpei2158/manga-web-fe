@@ -50,8 +50,8 @@ export async function fetchAdminPolicies(params: {
   if (Array.isArray(res.data)) {
     return {
       items: res.data,
-      serverPaginated: false,
       total: res.data.length,
+      totalPages: 1,
     }
   }
 
@@ -60,6 +60,7 @@ export async function fetchAdminPolicies(params: {
     items?: Policy[]
     total?: number
     totalItems?: number
+    totalPages?: number
   }
   const items = Array.isArray(payload?.items)
     ? payload.items
@@ -69,8 +70,8 @@ export async function fetchAdminPolicies(params: {
 
   return {
     items,
-    serverPaginated: true,
     total: Number(payload?.total ?? payload?.totalItems ?? items.length),
+    totalPages: Math.max(1, Number(payload?.totalPages ?? 1)),
   }
 }
 

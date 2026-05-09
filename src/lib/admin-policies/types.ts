@@ -61,5 +61,5 @@ export type SortOrder = "asc" | "desc"
 export interface PolicyListResponse {
   items: Policy[]
   total: number
-  serverPaginated: boolean
+  totalPages: number
 }

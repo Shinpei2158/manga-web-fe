@@ -41,17 +41,25 @@ export function TaxonomyTable({
   return (
     <div className="overflow-hidden rounded-lg border">
       <div className="w-full overflow-auto">
-        <table className="w-full text-sm">
+        <table className="min-w-[860px] w-full table-fixed text-sm">
+          <colgroup>
+            <col className="w-[26%]" />
+            <col className="w-[34%]" />
+            <col className="w-[130px]" />
+            {config.showStoriesCount ? <col className="w-[110px]" /> : null}
+            <col className="w-[150px]" />
+            <col className="w-[100px]" />
+          </colgroup>
           <thead className="bg-muted/30">
             <tr className="border-b">
               <th className="p-3 text-left font-medium">Name</th>
               <th className="p-3 text-left font-medium">Description</th>
-              <th className="p-3 text-left font-medium">Status</th>
+              <th className="p-3 text-center font-medium">Status</th>
               {config.showStoriesCount ? (
-                <th className="p-3 text-left font-medium">Stories</th>
+                <th className="p-3 text-center font-medium">Stories</th>
               ) : null}
               <th className="p-3 text-left font-medium">Updated</th>
-              <th className="p-3 text-left font-medium">Actions</th>
+              <th className="p-3 text-center font-medium">Actions</th>
             </tr>
           </thead>
 
@@ -87,28 +95,28 @@ function TaxonomyRow({
   return (
     <tr className="border-b last:border-b-0 hover:bg-muted/10">
       <td className="p-3 align-middle">
-        <div className="min-w-[220px] font-medium">{item.name}</div>
+        <div className="truncate font-medium">{item.name}</div>
       </td>
       <td className="p-3 align-middle text-muted-foreground">
-        <div className="min-w-[280px] line-clamp-2">{item.description}</div>
+        <div className="line-clamp-2">{item.description}</div>
       </td>
-      <td className="p-3 align-middle">
+      <td className="p-3 text-center align-middle">
         <Badge className={getTaxonomyStatusBadgeClass(item.status)}>
           {getTaxonomyStatusLabel(item.status)}
         </Badge>
       </td>
       {config.showStoriesCount ? (
-        <td className="p-3 align-middle">
-          <div className="flex items-center">
+        <td className="p-3 text-center align-middle">
+          <div className="inline-flex items-center">
             <Eye className="mr-1 h-4 w-4 text-blue-500" />
             {item.storiesCount ?? 0}
           </div>
         </td>
       ) : null}
-      <td className="p-3 align-middle text-muted-foreground">
+      <td className="whitespace-nowrap p-3 align-middle text-muted-foreground">
         {formatTaxonomyDate(item.updatedAt)}
       </td>
-      <td className="p-3 align-middle">
+      <td className="p-3 text-center align-middle">
         <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
           <Edit className="h-4 w-4" />
         </Button>
