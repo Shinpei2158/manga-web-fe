@@ -82,9 +82,6 @@ export function usePolicyListController() {
     }
   }, [policies, totalPolicies])
 
-  const filteredPolicies = policies
-  const paginatedPolicies = policies
-
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortOrder((previous) => (previous === "asc" ? "desc" : "asc"))
@@ -108,10 +105,9 @@ export function usePolicyListController() {
     counts,
     currentPage,
     filterStatus,
-    filteredPolicies,
     handleSort,
     loading,
-    paginatedPolicies,
+    policies,
     searchQuery,
     setCurrentPage,
     setFilterStatus,

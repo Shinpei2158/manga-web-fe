@@ -90,7 +90,6 @@ export async function fetchQueue(params?: {
   total: number;
   page: number;
   limit: number;
-  serverPaginated: boolean;
 }> {
   const res = await api.get("/moderation/queue", {
     params: {
@@ -125,7 +124,6 @@ export async function fetchQueue(params?: {
     total,
     page,
     limit,
-    serverPaginated: !Array.isArray(payload),
   };
 }
 

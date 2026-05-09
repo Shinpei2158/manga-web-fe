@@ -80,11 +80,11 @@ export function AdminMyNotificationsList({
         ) : null}
       </div>
 
-      {c.filteredNotifications.length === 0 ? (
+      {c.notifications.length === 0 ? (
         <EmptyNotificationsState />
       ) : (
         <div className="divide-y divide-slate-200">
-          {c.filteredNotifications.map((notification) => (
+          {c.notifications.map((notification) => (
             <NotificationRow
               key={notification._id}
               controller={c}

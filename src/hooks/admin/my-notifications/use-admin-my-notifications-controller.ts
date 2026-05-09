@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
@@ -169,8 +169,6 @@ export function useAdminMyNotificationsController() {
       toast.error(message);
     }
   };
-  const filteredNotifications = useMemo(() => notifications, [notifications]);
-
   const markAsRead = async (notificationId: string) => {
     if (!apiUrl) return;
 
@@ -250,7 +248,6 @@ export function useAdminMyNotificationsController() {
     currentPage,
     deleteNotification,
     error,
-    filteredNotifications,
     loading,
     markAllAsRead,
     markAsRead,

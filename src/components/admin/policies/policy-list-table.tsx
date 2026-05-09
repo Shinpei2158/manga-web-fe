@@ -61,7 +61,7 @@ export function PolicyListTable({
       <CardContent className="p-0">
         {c.loading ? (
           <PolicyTableLoadingSkeleton />
-        ) : c.filteredPolicies.length === 0 ? (
+        ) : c.policies.length === 0 ? (
           <PolicyEmptyState onReset={c.clearFilters} />
         ) : (
           <>
@@ -111,7 +111,7 @@ export function PolicyListTable({
                 </TableHeader>
 
                 <TableBody>
-                  {c.paginatedPolicies.map((policy) => (
+                  {c.policies.map((policy) => (
                     <TableRow
                       key={policy._id}
                       onClick={() =>

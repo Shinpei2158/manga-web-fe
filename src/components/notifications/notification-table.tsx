@@ -28,7 +28,6 @@ interface NotificationTableProps {
   onDeleteRequest: (notification: NotificationVM) => void;
   onToggleSave: (id: string, receiver_id: string) => void;
   onResend: (notification: NotificationVM) => void;
-  usersMap?: Record<string, string>;
   busyId?: string | null;
 }
 
@@ -72,11 +71,8 @@ export function NotificationTable({
   onDeleteRequest,
   onToggleSave,
   onResend,
-  usersMap = {},
   busyId = null,
 }: NotificationTableProps) {
-  const showEmailOrId = (id: string) => usersMap[id] || shortId(id);
-
   const from = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const to = Math.min(currentPage * pageSize, totalItems);
 
@@ -295,8 +291,8 @@ export function NotificationTable({
             <tbody className="divide-y divide-slate-200">
               {notifications.map((n) => {
                 const dateParts = formatDateParts(n.createdAt);
-                const receiverText = showEmailOrId(n.receiver_id);
-                const senderText = showEmailOrId(n.sender_id);
+                const receiverText = shortId(n.receiver_id);
+                const senderText = shortId(n.sender_id);
                 const isUnread = n.status === "Unread";
 
                 return (
@@ -404,8 +400,8 @@ export function NotificationTable({
       <div className="space-y-4 p-4 lg:hidden">
         {notifications.map((n) => {
           const dateParts = formatDateParts(n.createdAt);
-          const receiverText = showEmailOrId(n.receiver_id);
-          const senderText = showEmailOrId(n.sender_id);
+          const receiverText = shortId(n.receiver_id);
+          const senderText = shortId(n.sender_id);
           const isUnread = n.status === "Unread";
 
           return (

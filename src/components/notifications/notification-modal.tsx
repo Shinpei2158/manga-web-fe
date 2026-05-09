@@ -28,7 +28,6 @@ interface NotificationModalProps {
   onResend: (notification: NotificationVM) => void;
   onToggleSave: (id: string, receiver_id: string) => void;
   onDeleteRequest: (notification: NotificationVM) => void;
-  usersMap?: Record<string, string>;
   busyId?: string | null;
 }
 
@@ -66,12 +65,10 @@ export function NotificationModal({
   onResend,
   onToggleSave,
   onDeleteRequest,
-  usersMap = {},
   busyId = null,
 }: NotificationModalProps) {
   if (!notification) return null;
 
-  const showEmailOrId = (id: string) => usersMap[id] || shortId(id);
   const isBusy = busyId === notification._id;
 
   return (
@@ -140,7 +137,7 @@ export function NotificationModal({
                 Receiver
               </div>
               <p className="break-all text-sm text-slate-700" title={notification.receiver_id}>
-                {showEmailOrId(notification.receiver_id)}
+                {shortId(notification.receiver_id)}
               </p>
             </div>
 
@@ -150,7 +147,7 @@ export function NotificationModal({
                 Sender
               </div>
               <p className="break-all text-sm text-slate-700" title={notification.sender_id}>
-                {showEmailOrId(notification.sender_id)}
+                {shortId(notification.sender_id)}
               </p>
             </div>
           </div>

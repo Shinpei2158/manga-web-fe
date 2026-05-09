@@ -57,7 +57,7 @@ export function TaxonomyManagementPage({ config }: { config: TaxonomyConfig }) {
             <>
               <TaxonomyTable
                 config={config}
-                items={state.visibleItems}
+                items={state.items}
                 loading={state.loading}
                 onAdd={() => state.setIsAddDialogOpen(true)}
                 onEdit={state.openEditDialog}

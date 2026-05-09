@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import type {
   NotificationOverview,
@@ -39,7 +39,6 @@ export function useAdminNotificationsController() {
     total: 0,
     unread: 0,
   });
-  const [usersMap, setUsersMap] = useState<Record<string, string>>({});
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -81,7 +80,6 @@ export function useAdminNotificationsController() {
   }, [currentPage, filters.saved, filters.search, filters.sort, filters.status]);
 
   useEffect(() => {
-    setUsersMap({});
     void fetchOverview();
   }, [fetchOverview]);
 
@@ -104,8 +102,6 @@ export function useAdminNotificationsController() {
   useEffect(() => {
     setCurrentPage(1);
   }, [filters.status, filters.saved, filters.search, filters.sort]);
-
-  const paginatedNotifications = useMemo(() => notifications, [notifications]);
 
   const handleViewDetail = (notification: NotificationVM) => {
     setSelectedNotification(notification);
@@ -293,8 +289,8 @@ export function useAdminNotificationsController() {
     handleViewDetail,
     isModalOpen,
     loading,
+    notifications,
     overview,
-    paginatedNotifications,
     searchInput,
     selectedNotification,
     setCurrentPage,
@@ -304,7 +300,6 @@ export function useAdminNotificationsController() {
     setSearchInput,
     totalItems,
     totalPages,
-    usersMap,
   };
 }
 

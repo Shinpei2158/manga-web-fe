@@ -39,7 +39,7 @@ export function AdminNotificationsView({
         <AdminNotificationsLoading />
       ) : (
         <NotificationTable
-          notifications={c.paginatedNotifications}
+          notifications={c.notifications}
           currentPage={c.currentPage}
           pageSize={ADMIN_NOTIFICATIONS_PAGE_SIZE}
           totalItems={c.totalItems}
@@ -50,7 +50,6 @@ export function AdminNotificationsView({
           onDeleteRequest={c.setDeleteTarget}
           onToggleSave={c.handleToggleSave}
           onResend={c.handleResend}
-          usersMap={c.usersMap}
           busyId={c.busyId}
         />
       )}
@@ -63,7 +62,6 @@ export function AdminNotificationsView({
         onResend={c.handleResend}
         onToggleSave={c.handleToggleSave}
         onDeleteRequest={c.setDeleteTarget}
-        usersMap={c.usersMap}
         busyId={c.busyId}
       />
 

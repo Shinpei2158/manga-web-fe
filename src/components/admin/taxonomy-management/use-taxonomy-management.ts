@@ -95,7 +95,6 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
 
   const total = serverTotal;
   const pageCount = Math.max(1, Math.ceil(total / limit));
-  const visibleItems = items;
 
   const handleAddItem = async () => {
     if (!endpoint || !canAdd) return;
@@ -183,6 +182,7 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
     handleUpdateItem,
     isAddDialogOpen,
     isEditDialogOpen,
+    items,
     limit,
     loading,
     newItem,
@@ -203,7 +203,6 @@ export function useTaxonomyManagement(config: TaxonomyConfig) {
     setSort,
     sort,
     total,
-    visibleItems,
   };
 }
 

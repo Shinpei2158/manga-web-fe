@@ -1,48 +1,7 @@
-import type { NotificationVM } from "@/types/notification";
 import type {
-  AdminNotificationFilters,
   PolicyNotificationRecord,
   SendNotificationTemplate,
 } from "./types";
-
-export function processNotifications(
-  notifications: NotificationVM[],
-  filters: AdminNotificationFilters,
-) {
-  let list = [...notifications];
-
-  if (filters.saved === "Saved") {
-    list = list.filter((item) => item.is_save);
-  }
-
-  if (filters.saved === "Unsaved") {
-    list = list.filter((item) => !item.is_save);
-  }
-
-  switch (filters.sort) {
-    case "Oldest":
-      list.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
-      break;
-    case "Title A-Z":
-      list.sort((a, b) => a.title.localeCompare(b.title));
-      break;
-    case "Title Z-A":
-      list.sort((a, b) => b.title.localeCompare(a.title));
-      break;
-    case "Newest":
-    default:
-      list.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-      break;
-  }
-
-  return list;
-}
 
 export function buildGeneralNotificationTemplate(): SendNotificationTemplate {
   return {
