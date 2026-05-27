@@ -12,11 +12,11 @@ A high-performance, responsive, and feature-rich frontend application tailored f
 
 | Top-up & VNPay | Achievements |
 |---|---|
-| <img src="./screenshots/reader-mode.png" width="400" alt="Manga & Novel Reader"/> | <img src="./screenshots/wallet-rewards.png" width="400" alt="VNPAY & Gamification"/> |
+| <img src="./screenshots/topup.png" width="400" alt="Top-up Page"/> | <img src="./screenshots/achievement.png" width="400" alt="Gamification"/> |
 
 | Tax & Accounting Dashboard | Excel File Format |
 |---|---|
-| <img src="./screenshots/accounting-tax.png" width="400" alt="Accounting Panel"/> | <img src="./screenshots/ai-chat.png" width="400" alt="AI Interface"/> |
+| <img src="./screenshots/accounting-tax.png" width="400" alt="Accounting Panel"/> | <img src="./screenshots/excel-file.png" width="400" alt="Excel File Format"/> |
 
 ---
 
