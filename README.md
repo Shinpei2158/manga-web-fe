@@ -70,22 +70,25 @@ NEXT_PUBLIC_MEASUREMENT_ID=your_measurement_id
 ## Getting Started
 Follow these steps to set up the project locally:
 
-# 1. Clone the Repository
+### 1. Clone the Repository
 ```bash
 git clone [https://github.com/LGK1412/manga-web-fe.git](https://github.com/LGK1412/manga-web-fe.git)
 ```
+```bash
 cd manga-web-fe
+```
 
-# 2. Install Dependencies
+### 2. Install Dependencies
 Make sure you have Node.js installed, then run:
 
 ```bash
 npm install
 ```
-# 3. Set Up Environment Variables
+
+### 3. Set Up Environment Variables
 Create a .env.local file in the root directory and populate it with your configuration keys as shown in the Environment Variables section above.
 
-# 4. Run the Development Server
+### 4. Run the Development Server
 ```bash
 npm run dev
 ```
